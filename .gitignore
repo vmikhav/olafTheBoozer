@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+ads/
+data/
+.vscode/
+.idea/
+*.log
+*.iml
+deploy.js
