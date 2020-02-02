@@ -211,6 +211,14 @@ export default class extends Phaser.GameObjects.Container {
     const pos = this.path.pop();
     const tmpX = pos.x, tmpY = pos.y;
     const newCoords = g2p(tmpX, tmpY);
+    if (tmpX > this.gridX) {
+      this.orientation = 'right';
+    } else if (tmpX < this.gridX) {
+      this.orientation = 'left';
+    }
+    this.sprite.anims.play('viking_idle_' + this.orientation);
+    this.gridX = tmpX;
+    this.gridY = tmpY;
     const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
     const badItem = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
     const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
@@ -223,7 +231,7 @@ export default class extends Phaser.GameObjects.Container {
       }
     }
     if (!config.musicMuted && !config.soundsMuted) {
-      if (badItem !== -1) {
+      if (badItem !== -1 && actualItem !== badItem) {
         let i;
         for (i = 0; i < config.soundsMap.length; i++) {
           if (config.soundsMap[i].items.includes(goodItem) || config.soundsMap[i].items.includes(badItem)) {

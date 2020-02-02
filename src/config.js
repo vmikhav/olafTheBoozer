@@ -35,7 +35,7 @@ export default {
   },
   lang: lang.en,
   tutorialFinished: false,
-  levelCount: 2,
+  levelCount: 3,
   gameStat: {
     started: new Date(),
     completed: 0,
