@@ -134,9 +134,9 @@ export default class extends Phaser.Scene {
     }
   }
 
-  update(args) {
+  update(time, delta) {
     if (this.viking) {
-      this.viking.update(args);
+      this.viking.update(time, delta);
     }
   }
 

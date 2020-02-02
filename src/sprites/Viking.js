@@ -32,21 +32,17 @@ export default class extends Phaser.GameObjects.Container {
 
     scene.anims.create({
       key: 'viking_idle_left',
-      frames: scene.anims.generateFrameNumbers('viking', {start: 0, end: 1}),
+      frames: [ { key: 'viking', frame: 0 }, { key: 'viking', frame: 1 }, { key: 'viking', frame: 0 } ],
       frameRate: 5,
       repeatDelay: 1000,
-      yoyo: true,
       repeat: -1,
-      showOnStart: true,
     });
     scene.anims.create({
       key: 'viking_idle_right',
-      frames: scene.anims.generateFrameNumbers('viking', {start: 2, end: 3}),
+      frames: [ { key: 'viking', frame: 3 }, { key: 'viking', frame: 2 }, { key: 'viking', frame: 3 } ],
       frameRate: 5,
       repeatDelay: 1000,
-      yoyo: true,
       repeat: -1,
-      showOnStart: true,
     });
 
     this.scene  = scene;
@@ -75,6 +71,7 @@ export default class extends Phaser.GameObjects.Container {
     }
 
     scene.add.existing(this);
+    scene.add.existing(this.sprite);
 
     scene.time.addEvent({
       delay: config.gameOptions.hiccupDelay,
@@ -105,7 +102,7 @@ export default class extends Phaser.GameObjects.Container {
     this.puzzleLayer = this.map.getLayer('puzzle').tilemapLayer;
   }
 
-  update(args) {
+  update(time, delta) {
     if (!this.isKeyPressed && !this.isMoving) {
       if (!this.isMoving) {
         let direction = {x: 0, y: 0};
@@ -138,7 +135,7 @@ export default class extends Phaser.GameObjects.Container {
     } else if (x < 0) {
       this.orientation = 'left';
     }
-    this.sprite.anims.play('viking_idle_' + this.orientation);
+    this.sprite.anims.play('viking_idle_' + this.orientation, true);
     const goodItem   = this.map.getLayer('good_items').data[tmpY][tmpX].index;
     const badItem    = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
     const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
@@ -216,7 +213,7 @@ export default class extends Phaser.GameObjects.Container {
     } else if (tmpX < this.gridX) {
       this.orientation = 'left';
     }
-    this.sprite.anims.play('viking_idle_' + this.orientation);
+    this.sprite.anims.play('viking_idle_' + this.orientation, true);
     this.gridX = tmpX;
     this.gridY = tmpY;
     const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
