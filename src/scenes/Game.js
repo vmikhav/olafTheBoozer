@@ -35,12 +35,17 @@ export default class extends Phaser.Scene {
 
   create (params) {
     this.gameOver = config.gameStat.completed === config.levelCount;
-    const startPosition = showMap(this, 'base', this.gameOver);
-    this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete) => {this.levelResult(total, complete);});
+    const level = config.gameStat.completed === config.levelCount ? config.gameStat.completed - 1 : config.gameStat.completed;
+    const startPosition = showMap(this, 'level' + level, this.gameOver);
+    if (!this.gameOver) {
+      this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete) => {
+        this.levelResult(total, complete);
+      });
+    }
 
     if (!config.music) {
-      //config.music = this.sound.add('music', config.musicParams);
-      //config.music.play();
+      config.music = this.sound.add('birds', config.musicParams);
+      config.music.play();
       config.musicMuted = localStorage[config.localStorageName + '.muted'] === 'true';
       if (config.musicMuted) {
         this.changeMuteState(config.musicMuted);
@@ -64,11 +69,13 @@ export default class extends Phaser.Scene {
         this.add.existing(this.muteButton);
         this.muteButton.show();
 
-        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300);
+        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 125, 600, 160);
         this.add.existing(this.panel);
 
         if (this.gameOver) {
-          this.viking.canMove = false;
+          if (this.viking) {
+            this.viking.canMove = false;
+          }
           this.menuButton = new Button(this, worldView.centerX, worldView.top - 100, 300, 120, config.lang.menu, 'buttonLong_brown', () => this.openMenu());
           this.add.existing(this.menuButton);
           this.tweens.add({
@@ -78,7 +85,7 @@ export default class extends Phaser.Scene {
             duration: 1500,
           });
           const scoreLabel = '.high_score';
-          let text = config.lang.score + ': ' + config.gameStat.score + '\n\n';
+          let text = config.lang.score + ': ' + config.gameStat.score + '\n';
           if (config.gameStat.score > parseInt(localStorage[config.localStorageName + scoreLabel] || 0)) {
             localStorage[config.localStorageName + scoreLabel] = config.gameStat.score;
             text += config.lang.newHighScore + '!';
@@ -90,13 +97,13 @@ export default class extends Phaser.Scene {
           this.restartButton = new ImageButton(this, worldView.right - 60, worldView.top + 60, 80, 80,
             'buttonSquare_brown', 'restart', () => {this.restart();}).setAlpha(0);
 
-          this.upButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 240, 80, 80,
+          this.upButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 250, 100, 100,
             'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}).setAlpha(0);
-          this.downButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 60, 80, 80,
+          this.downButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 60, 100, 100,
             'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0);
-          this.leftButton = new ImageButton(this, worldView.right - 220, worldView.bottom - 150, 80, 80,
+          this.leftButton = new ImageButton(this, worldView.right - 220, worldView.bottom - 155, 100, 100,
             'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}).setAlpha(0);
-          this.rightButton = new ImageButton(this, worldView.right - 60, worldView.bottom - 150, 80, 80,
+          this.rightButton = new ImageButton(this, worldView.right - 60, worldView.bottom - 155, 100, 100,
             'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}).setAlpha(0);
 
           this.add.existing(this.restartButton);this.restartButton.show();
@@ -128,7 +135,9 @@ export default class extends Phaser.Scene {
   }
 
   update(args) {
-    this.viking.update(args);
+    if (this.viking) {
+      this.viking.update(args);
+    }
   }
 
   levelResult(total, completed) {
@@ -136,7 +145,10 @@ export default class extends Phaser.Scene {
     this.downButton.hide();
     this.leftButton.hide();
     this.rightButton.hide();
-    this.viking.canMove = false;
+    if (this.viking) {
+      this.viking.canMove = false;
+      this.viking.restorePath();
+    }
     const progress = completed / total;
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play(progress > .75 ? 'fanfare' : 'tada');
@@ -148,6 +160,9 @@ export default class extends Phaser.Scene {
       config.gameStat.score += score;
       localStorage[config.localStorageName + '.score'] = config.gameStat.score;
       localStorage[config.localStorageName + '.level'] = config.gameStat.completed;
+      if (this.viking) {
+        this.viking.stopped = true;
+      }
       this.restart();
     });
   }

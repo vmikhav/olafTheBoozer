@@ -18,10 +18,12 @@ export default class extends Phaser.GameObjects.Container {
   isKeyPressed = false;
   isMoving = false;
   canMove = true;
+  stopped = false;
 
   puzzleLayer;
 
   callback;
+  path;
 
   constructor(scene, map, x, y, callback = (total, collected) => {}) {
     super(scene, x * config.gameOptions.tileSize, y * config.gameOptions.tileSize);
@@ -47,9 +49,10 @@ export default class extends Phaser.GameObjects.Container {
       showOnStart: true,
     });
 
-    this.scene = scene;
-    this.gridX = x;
-    this.gridY = y;
+    this.scene  = scene;
+    this.gridX  = x;
+    this.gridY  = y;
+    this.path   = [{x, y}];
     this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, 'viking', 5);
     this.sprite.setDisplaySize(config.gameOptions.vikingSize, config.gameOptions.vikingSize);
     const origin = ((config.gameOptions.vikingSize - config.gameOptions.tileSize) / 2) / config.gameOptions.vikingSize
@@ -149,6 +152,7 @@ export default class extends Phaser.GameObjects.Container {
     this.isMoving = true;
     this.gridX = tmpX;
     this.gridY = tmpY;
+    this.path.push({x: tmpX, y: tmpY});
     const newCoords = g2p(tmpX, tmpY);
     this.scene.tweens.add({
       targets: this,
@@ -157,7 +161,7 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
-        if (this.gridX === 14 && this.gridY === 33) {
+        if (this.gridX === 14 && this.gridY === 31) {
           let total = 0, completed = 0;
           const badItems    = this.map.getLayer('bad_items').data;
           const puzzleItems = this.map.getLayer('puzzle').data;
@@ -173,7 +177,7 @@ export default class extends Phaser.GameObjects.Container {
           }
           this.callback(total, completed);
         }
-        if (badItem !== -1) {
+        if (badItem !== -1 && actualItem !== -1) {
           if (!config.musicMuted && !config.soundsMuted) {
             let i;
             for (i = 0; i < config.soundsMap.length; i++) {
@@ -196,6 +200,49 @@ export default class extends Phaser.GameObjects.Container {
           }
         }
         this.isMoving = false;
+      }
+    });
+  }
+
+  restorePath() {
+    if (this.stopped || !this.path.length) {
+      return;
+    }
+    const pos = this.path.pop();
+    const tmpX = pos.x, tmpY = pos.y;
+    const newCoords = g2p(tmpX, tmpY);
+    const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
+    const badItem = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
+    const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
+    if (badItem !== -1) {
+      this.puzzleLayer.putTileAt(badItem, tmpX, tmpY);
+      const newGoodItem = this.map.getLayer('good_items').data[tmpY - 1][tmpX].index;
+      const newBadItem = this.map.getLayer('bad_items').data[tmpY - 1][tmpX].index;
+      if (newBadItem === -1 && newGoodItem !== -1) {
+        this.puzzleLayer.putTileAt(-1, tmpX, tmpY - 1);
+      }
+    }
+    if (!config.musicMuted && !config.soundsMuted) {
+      if (badItem !== -1) {
+        let i;
+        for (i = 0; i < config.soundsMap.length; i++) {
+          if (config.soundsMap[i].items.includes(goodItem) || config.soundsMap[i].items.includes(badItem)) {
+            break;
+          }
+        }
+        this.actionSounds[i === config.soundsMap.length ? 'break' : config.soundsMap[i].sound].play();
+      } else {
+        this.actionSounds['step'].play();
+      }
+    }
+    this.scene.tweens.add({
+      targets: this,
+      x: newCoords.x,
+      y: newCoords.y,
+      ease: 'Sine.easeInOut',
+      duration: config.gameOptions.moveDuration,
+      onComplete: () => {
+        setTimeout(() => this.restorePath(), 50);
       }
     });
   }

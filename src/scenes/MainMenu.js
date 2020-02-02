@@ -2,7 +2,6 @@ import Phaser from 'phaser'
 import config from '../config';
 import Button from '../components/button'
 import { resetGameStat, showMap } from '../utils'
-import Viking from "../sprites/Viking";
 
 export default class extends Phaser.Scene {
   startButton;
@@ -22,8 +21,8 @@ export default class extends Phaser.Scene {
   }
 
   create() {
-    const startPosition = showMap(this, 'base', true);
-    //this.viking = new Viking(this, this.map, startPosition.x, startPosition.y);
+    const level = config.gameStat.completed === config.levelCount ? config.gameStat.completed - 1 : config.gameStat.completed;
+    showMap(this, 'level' + level, true);
 
     const worldView = this.cameras.main.worldView;
     this.backgroundMask = this.add
@@ -76,10 +75,13 @@ export default class extends Phaser.Scene {
       duration: 1500,
       delay: 500,
       onComplete: () => {
-        if (config.tutorialFinished) {
+        if (config.gameStat.completed === config.levelCount) {
           resetGameStat();
+        }
+        if (config.tutorialFinished) {
           this.scene.start('GameScene');
         } else {
+          resetGameStat();
           this.scene.start('IntroScene');
         }
       }

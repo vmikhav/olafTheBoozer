@@ -46,6 +46,7 @@ export default class ImageButton extends Phaser.GameObjects.Container {
   }
 
   hide() {
+    if (!this.isShowed) {return;}
     this.scene.tweens.add({
       targets: this,
       alpha: {from: 1, to: 0},
