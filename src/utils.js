@@ -25,7 +25,7 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
   y = Math.floor(scene.map.heightInPixels * config.gameOptions.tileSize / 32);
   scene.cameras.main.centerOn(x, y);
   let coords = null;
-  const badItems = scene.map.getLayer('bad_items').data;
+  const badItems = scene.map.getLayer(drawRoof ? 'good_items' : 'bad_items').data;
   for (y = 0; y < scene.bedLayer.layer.height; y++) {
     for (x = 0; x < scene.bedLayer.layer.width; x++) {
       if (badItems[y][x].index !== -1) {
