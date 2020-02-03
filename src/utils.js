@@ -10,10 +10,10 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
   scene.wallsLayer.scale = scale;
   scene.bedLayer = scene.map.createStaticLayer('bed', tileset);
   scene.bedLayer.scale = scale;
-  scene.treesLayer = scene.map.createStaticLayer('trees', tileset);
-  scene.treesLayer.scale = scale;
   scene.puzzleLayer = scene.map.createBlankDynamicLayer('puzzle', tileset);
   scene.puzzleLayer.scale = scale;
+  scene.treesLayer = scene.map.createStaticLayer('trees', tileset);
+  scene.treesLayer.scale = scale;
   scene.roofLayer = scene.map.createStaticLayer('roof', tileset);
   scene.roofLayer.scale = scale;
   if (!drawRoof) {
