@@ -25,7 +25,7 @@ export default class extends Phaser.Scene {
   leftButton;
   rightButton;
 
-  countPanel;
+  level;
 
   constructor () {
     super({ key: 'GameScene' });
@@ -34,9 +34,9 @@ export default class extends Phaser.Scene {
   preload () {}
 
   create (params) {
-    this.gameOver = config.gameStat.completed === config.levelCount;
-    const level = config.gameStat.completed === config.levelCount ? config.gameStat.completed - 1 : config.gameStat.completed;
-    const startPosition = showMap(this, 'level' + level, this.gameOver);
+    this.gameOver = params.level >= config.levelCount;
+    this.level = this.gameOver ? config.levelCount - 1 : params.level;
+    const startPosition = showMap(this, 'level' + this.level, this.gameOver);
     if (!this.gameOver) {
       this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete) => {
         this.levelResult(total, complete);
@@ -59,7 +59,7 @@ export default class extends Phaser.Scene {
 
     const worldView = this.cameras.main.worldView;
 
-    this.needBackground = config.gameStat.completed > 0;
+    this.needBackground = this.level > 0;
 
     this.time.addEvent({
       delay: 100,
@@ -156,10 +156,19 @@ export default class extends Phaser.Scene {
     const score = Math.floor((config.gameStat.completed + 1) * 500 * progress);
     const text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
     this.panel.show(null, text, config.lang.next, ()  => {
-      config.gameStat.completed++;
-      config.gameStat.score += score;
+      const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '[]');
+      while (levels.length <= this.level) {
+        levels.push({score: 0});
+      }
+      if (levels[this.level].score < score) {
+        config.gameStat.score += score - levels[this.level].score;
+        levels[this.level].score = score;
+      }
+      this.level++;
+      config.gameStat.completed = Math.max(config.gameStat.completed, this.level);
       localStorage[config.localStorageName + '.score'] = config.gameStat.score;
       localStorage[config.localStorageName + '.level'] = config.gameStat.completed;
+      localStorage[config.localStorageName + '.levels'] = JSON.stringify(levels);
       if (this.viking) {
         this.viking.stopped = true;
       }
@@ -201,7 +210,7 @@ export default class extends Phaser.Scene {
       duration: 1500,
       delay: 500,
       onComplete: () => {
-        this.scene.restart();
+        this.scene.restart({level: this.level});
       }
     });
   }

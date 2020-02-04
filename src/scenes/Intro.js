@@ -69,7 +69,7 @@ export default class extends Phaser.Scene {
       duration: 800,
       onComplete: () => {
         resetGameStat();
-        this.scene.start('GameScene');
+        this.scene.start('GameScene', {level: config.gameStat.completed});
       }
     });
   }

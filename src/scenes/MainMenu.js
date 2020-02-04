@@ -79,7 +79,7 @@ export default class extends Phaser.Scene {
           resetGameStat();
         }
         if (config.tutorialFinished) {
-          this.scene.start('GameScene');
+          this.scene.start('GameScene', {level: config.gameStat.completed});
         } else {
           resetGameStat();
           this.scene.start('IntroScene');
