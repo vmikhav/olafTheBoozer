@@ -92,6 +92,13 @@ class Game extends Phaser.Game {
     window.addEventListener('resize', event => {
       resize();
     });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === 'visible') {
+        this.scene.resume('GameScene');
+      } else {
+        this.scene.pause('GameScene');
+      }
+    });
     setTimeout(() => {
       resize()
     }, 10);

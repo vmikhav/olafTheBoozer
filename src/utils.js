@@ -2,6 +2,12 @@ import config from './config'
 
 export const showMap = (scene, name = 'base', drawRoof = false) => {
   scene.map = scene.add.tilemap(name + 'Map');
+  const properties = {};
+  let i;
+  for (i = 0; i < scene.map.properties.length; i++) {
+    properties[scene.map.properties[i].name] = scene.map.properties[i].value;
+  }
+  scene.map.properties = properties;
   const scale = Math.floor(config.gameOptions.tileSize / 16);
   const tileset = scene.map.addTilesetImage('base', 'Village_Tileset');
   scene.groundLayer = scene.map.createStaticLayer('ground', tileset);

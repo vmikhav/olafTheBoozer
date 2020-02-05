@@ -28,7 +28,7 @@ export default {
     moveDuration: 130,
     hiccupSounds: ['hrrng', 'hiccup', 'groan'],
     actionSounds: [
-      'beep.wav', 'birds.mp3', 'break.wav', 'bump.wav',
+      'beep.wav', 'birds.mp3', 'break.wav', 'bump.wav', 'water-step.wav',
       'glass.wav', 'smash.wav', 'step.wav', 'vomit.wav',
     ],
     finishSounds: ['fanfare.mp3', 'tada.mp3'],

@@ -24,6 +24,8 @@ export default class extends Phaser.Scene {
   downButton;
   leftButton;
   rightButton;
+  panel;
+  textPanel;
 
   level;
 
@@ -99,18 +101,36 @@ export default class extends Phaser.Scene {
 
           this.upButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 250, 100, 100,
             'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}).setAlpha(0);
-          this.downButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 60, 100, 100,
-            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0);
           this.leftButton = new ImageButton(this, worldView.right - 220, worldView.bottom - 155, 100, 100,
             'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}).setAlpha(0);
           this.rightButton = new ImageButton(this, worldView.right - 60, worldView.bottom - 155, 100, 100,
             'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}).setAlpha(0);
+          this.downButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 60, 100, 100,
+            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0);
 
-          this.add.existing(this.restartButton);this.restartButton.show();
-          this.add.existing(this.upButton);this.upButton.show();
-          this.add.existing(this.downButton);this.downButton.show();
-          this.add.existing(this.leftButton);this.leftButton.show();
-          this.add.existing(this.rightButton);this.rightButton.show();
+          this.textPanel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300);
+          this.add.existing(this.textPanel);
+
+          this.viking.canMove = false;
+          const showButtons = () => {
+            this.viking.canMove = true;
+            this.textPanel.hide();
+            this.add.existing(this.restartButton); this.restartButton.show();
+            this.add.existing(this.upButton); this.upButton.show();
+            this.add.existing(this.downButton); this.downButton.show();
+            this.add.existing(this.leftButton); this.leftButton.show();
+            this.add.existing(this.rightButton); this.rightButton.show();
+          };
+
+          const showDialog = index => {
+            if (config.lang['level'+this.level].length > index) {
+              this.textPanel.show(null,config.lang['level'+this.level][index], config.lang.next, () => showDialog(index + 1));
+            } else {
+              showButtons();
+            }
+          };
+
+          config.lang.hasOwnProperty('level'+this.level) ? showDialog(0) : showButtons();
         }
       }
     });
@@ -153,7 +173,7 @@ export default class extends Phaser.Scene {
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play(progress > .75 ? 'fanfare' : 'tada');
     }
-    const score = Math.floor((config.gameStat.completed + 1) * 500 * progress);
+    const score = Math.floor(this.map.properties.score * progress);
     const text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
     this.panel.show(null, text, config.lang.next, ()  => {
       const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '[]');

@@ -44,4 +44,8 @@ lang.en.intro1 = "(Retrace your trail\nof destruction to\nthe front gate)";
 lang.uk.intro1 = "(Відновіть Ваш\nшлях руйнування до\nпарадного входу)";
 lang.ru.intro1 = "(Восстановите Ваш\nпуть разрушения к\nпарадному входу)";
 
+lang.en.level2 = ["Why is there glass\nin my beard?"];
+lang.uk.level2 = ["Чому в моїй бороді\nскло?"];
+lang.ru.level2 = ["Почему в моей\nбороде стекло?"];
+
 export default lang;
