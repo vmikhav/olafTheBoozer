@@ -14,8 +14,6 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
   scene.groundLayer.scale = scale;
   scene.wallsLayer = scene.map.createStaticLayer('walls', tileset);
   scene.wallsLayer.scale = scale;
-  scene.bedLayer = scene.map.createStaticLayer('bed', tileset);
-  scene.bedLayer.scale = scale;
   scene.puzzleLayer = scene.map.createBlankDynamicLayer('puzzle', tileset);
   scene.puzzleLayer.scale = scale;
   scene.treesLayer = scene.map.createStaticLayer('trees', tileset);
@@ -30,17 +28,17 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
   x = Math.floor(scene.map.widthInPixels * config.gameOptions.tileSize / 32);
   y = Math.floor(scene.map.heightInPixels * config.gameOptions.tileSize / 32);
   scene.cameras.main.centerOn(x, y);
-  let coords = null;
   const badItems = scene.map.getLayer(drawRoof ? 'good_items' : 'bad_items').data;
-  for (y = 0; y < scene.bedLayer.layer.height; y++) {
-    for (x = 0; x < scene.bedLayer.layer.width; x++) {
+  for (y = 0; y < scene.puzzleLayer.layer.height; y++) {
+    for (x = 0; x < scene.puzzleLayer.layer.width; x++) {
       if (badItems[y][x].index !== -1) {
         scene.puzzleLayer.putTileAt(badItems[y][x].index, x, y);
       }
-      if (!coords && scene.bedLayer.getTileAt(x, y)) {
-        coords = {x, y: y + 1};
-      }
     }
+  }
+  let coords = null;
+  if (scene.map.properties.hasOwnProperty('startPosX')) {
+    coords = {x: scene.map.properties.startPosX, y: scene.map.properties.startPosY};
   }
   return coords;
 };

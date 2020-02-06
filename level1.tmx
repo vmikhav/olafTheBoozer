@@ -5,7 +5,11 @@
   <export target="assets/maps/level1.json" format="json"/>
  </editorsettings>
  <properties>
+  <property name="endPosX" type="int" value="14"/>
+  <property name="endPosY" type="int" value="31"/>
   <property name="score" type="int" value="500"/>
+  <property name="startPosX" type="int" value="18"/>
+  <property name="startPosY" type="int" value="26"/>
  </properties>
  <tileset firstgid="1" name="base" tilewidth="16" tileheight="16" spacing="2" margin="1" tilecount="1024" columns="32">
   <image source="assets/images/Village_Tileset.png" width="576" height="576"/>
@@ -17,67 +21,95 @@
    <terrain name="step1" tile="0"/>
    <terrain name="step2" tile="0"/>
    <terrain name="step3" tile="0"/>
+   <terrain name="grass0" tile="0"/>
   </terraintypes>
-  <tile id="0" terrain=",,,0"/>
-  <tile id="1" terrain=",,0,0"/>
-  <tile id="2" terrain=",,0,"/>
-  <tile id="3" terrain=",0,0,0"/>
-  <tile id="4" terrain="0,,0,0"/>
-  <tile id="5" terrain=",,,2"/>
-  <tile id="6" terrain=",,2,2"/>
-  <tile id="7" terrain=",,2,"/>
-  <tile id="8" terrain=",2,2,2"/>
-  <tile id="9" terrain="2,,2,2"/>
-  <tile id="10" terrain=",,,1"/>
-  <tile id="11" terrain=",,1,1"/>
-  <tile id="12" terrain=",,1,"/>
-  <tile id="13" terrain=",1,1,1"/>
-  <tile id="14" terrain="1,,1,1"/>
+  <tile id="0" terrain="7,7,7,0"/>
+  <tile id="1" terrain="7,7,0,0"/>
+  <tile id="2" terrain="7,7,0,7"/>
+  <tile id="3" terrain="7,0,0,0"/>
+  <tile id="4" terrain="0,7,0,0"/>
+  <tile id="5" terrain="7,7,7,2"/>
+  <tile id="6" terrain="7,7,2,2"/>
+  <tile id="7" terrain="7,7,2,7"/>
+  <tile id="8" terrain="7,2,2,2"/>
+  <tile id="9" terrain="2,7,2,2"/>
+  <tile id="10" terrain="7,7,7,1"/>
+  <tile id="11" terrain="7,7,1,1"/>
+  <tile id="12" terrain="7,7,1,7"/>
+  <tile id="13" terrain="7,1,1,1"/>
+  <tile id="14" terrain="1,7,1,1"/>
   <tile id="15" terrain=",,,3"/>
   <tile id="16" terrain=",,3,3"/>
   <tile id="17" terrain=",,3,"/>
   <tile id="18" terrain=",3,3,3"/>
   <tile id="19" terrain="3,,3,3"/>
-  <tile id="32" terrain=",0,,0"/>
+  <tile id="32" terrain="7,0,7,0"/>
   <tile id="33" terrain="0,0,0,0"/>
-  <tile id="34" terrain="0,,0,"/>
-  <tile id="35" terrain="0,0,,0"/>
-  <tile id="36" terrain="0,0,0,"/>
-  <tile id="37" terrain=",2,,2"/>
+  <tile id="34" terrain="0,7,0,7"/>
+  <tile id="35" terrain="0,0,7,0"/>
+  <tile id="36" terrain="0,0,0,7"/>
+  <tile id="37" terrain="7,2,7,2"/>
   <tile id="38" terrain="2,2,2,2"/>
-  <tile id="39" terrain="2,,2,"/>
-  <tile id="40" terrain="2,2,,2"/>
-  <tile id="41" terrain="2,2,2,"/>
-  <tile id="42" terrain=",1,,1"/>
+  <tile id="39" terrain="2,7,2,7"/>
+  <tile id="40" terrain="2,2,7,2"/>
+  <tile id="41" terrain="2,2,2,7"/>
+  <tile id="42" terrain="7,1,7,1"/>
   <tile id="43" terrain="1,1,1,1"/>
-  <tile id="44" terrain="1,,1,"/>
-  <tile id="45" terrain="1,1,,1"/>
-  <tile id="46" terrain="1,1,1,"/>
+  <tile id="44" terrain="1,7,1,7"/>
+  <tile id="45" terrain="1,1,7,1"/>
+  <tile id="46" terrain="1,1,1,7"/>
   <tile id="47" terrain=",3,,3"/>
   <tile id="48" terrain="3,3,3,3"/>
   <tile id="49" terrain="3,,3,"/>
   <tile id="50" terrain="3,3,,3"/>
   <tile id="51" terrain="3,3,3,"/>
-  <tile id="64" terrain=",0,,"/>
-  <tile id="65" terrain="0,0,,"/>
-  <tile id="66" terrain="0,,,"/>
-  <tile id="67" terrain=",0,0,"/>
-  <tile id="68" terrain="0,,,0"/>
-  <tile id="69" terrain=",2,,"/>
-  <tile id="70" terrain="2,2,,"/>
-  <tile id="71" terrain="2,,,"/>
-  <tile id="72" terrain=",2,2,"/>
-  <tile id="73" terrain="2,,,2"/>
-  <tile id="74" terrain=",1,,"/>
-  <tile id="75" terrain="1,1,,"/>
-  <tile id="76" terrain="1,,,"/>
-  <tile id="77" terrain=",1,1,"/>
-  <tile id="78" terrain="1,,,1"/>
+  <tile id="64" terrain="7,0,7,7"/>
+  <tile id="65" terrain="0,0,7,7"/>
+  <tile id="66" terrain="0,7,7,7"/>
+  <tile id="67" terrain="7,0,0,7"/>
+  <tile id="68" terrain="0,7,7,0"/>
+  <tile id="69" terrain="7,2,7,7"/>
+  <tile id="70" terrain="2,2,7,7"/>
+  <tile id="71" terrain="2,7,7,7"/>
+  <tile id="72" terrain="7,2,2,7"/>
+  <tile id="73" terrain="2,7,7,2"/>
+  <tile id="74" terrain="7,1,7,7"/>
+  <tile id="75" terrain="1,1,7,7"/>
+  <tile id="76" terrain="1,7,7,7"/>
+  <tile id="77" terrain="7,1,1,7"/>
+  <tile id="78" terrain="1,7,7,1"/>
   <tile id="79" terrain=",3,,"/>
   <tile id="80" terrain="3,3,,"/>
   <tile id="81" terrain="3,,,"/>
   <tile id="82" terrain=",3,3,"/>
   <tile id="83" terrain="3,,,3"/>
+  <tile id="96" terrain="7,7,7,7"/>
+  <tile id="97" terrain="7,7,7,7" probability="0.075"/>
+  <tile id="98" terrain="7,7,7,7" probability="0.075"/>
+  <tile id="102" terrain="1,1,1,1"/>
+  <tile id="103" terrain="1,1,1,1"/>
+  <tile id="104" terrain="1,1,1,1"/>
+  <tile id="105" terrain="1,1,1,1"/>
+  <tile id="106" terrain="1,1,1,1" probability="0"/>
+  <tile id="107" terrain="1,1,1,1" probability="0"/>
+  <tile id="108" terrain="1,1,1,1" probability="0"/>
+  <tile id="109" terrain="1,1,1,1" probability="0"/>
+  <tile id="110" terrain="1,1,1,1" probability="0"/>
+  <tile id="111" terrain="1,1,1,1" probability="0"/>
+  <tile id="112" terrain="1,1,1,1" probability="0"/>
+  <tile id="113" terrain="1,1,1,1" probability="0"/>
+  <tile id="134" terrain="1,1,1,1"/>
+  <tile id="135" terrain="1,1,1,1"/>
+  <tile id="136" terrain="1,1,1,1" probability="0.5"/>
+  <tile id="137" terrain="1,1,1,1" probability="0"/>
+  <tile id="138" terrain="1,1,1,1" probability="0"/>
+  <tile id="139" terrain="1,1,1,1" probability="0"/>
+  <tile id="140" terrain="1,1,1,1" probability="0"/>
+  <tile id="141" terrain="1,1,1,1" probability="0"/>
+  <tile id="142" terrain="1,1,1,1" probability="0"/>
+  <tile id="143" terrain="1,1,1,1" probability="0"/>
+  <tile id="144" terrain="1,1,1,1" probability="0"/>
+  <tile id="145" terrain="1,1,1,1" probability="0"/>
   <tile id="372" terrain=",,,4"/>
   <tile id="373" terrain=",,4,4"/>
   <tile id="374" terrain=",,4,"/>
@@ -146,11 +178,11 @@
 38,39,42,72,97,97,97,97,97,57,26,26,59,27,26,26,26,58,58,58,60,97,97,97,43,44,44,44,44,44,
 70,71,72,97,97,97,97,97,97,25,27,26,27,58,27,59,26,58,27,27,28,97,97,97,75,76,76,76,76,76,
 97,97,6,7,7,8,97,97,97,57,59,58,58,58,58,26,27,26,59,26,28,97,97,97,97,97,97,97,97,97,
-97,97,38,39,39,40,97,97,97,57,27,27,26,27,27,58,27,58,26,26,60,97,97,97,97,97,97,97,97,97,
-97,97,70,71,71,72,97,97,57,25,26,59,26,59,27,59,58,59,58,59,60,97,98,97,97,97,97,97,97,97,
-97,97,97,97,97,97,97,97,97,25,27,59,58,58,27,27,27,59,58,27,60,97,97,97,97,97,97,39,97,97,
-97,97,1,2,3,97,97,98,97,57,27,60,97,97,54,97,97,57,27,58,60,97,97,97,97,97,97,97,97,97,
-97,1,4,34,35,97,97,97,97,97,97,97,46,137,145,136,47,97,97,97,97,97,97,97,97,97,97,97,97,97,
+97,97,38,39,39,40,97,97,97,57,27,27,26,27,27,58,27,58,26,26,60,97,97,97,97,97,6,7,8,97,
+97,97,70,71,71,72,97,97,57,25,26,59,26,59,27,59,58,59,58,59,60,97,98,97,6,7,9,39,40,97,
+97,97,97,97,97,97,97,97,97,25,27,59,58,58,27,27,27,59,58,27,60,97,97,97,38,39,39,39,40,97,
+97,97,1,2,3,97,97,98,97,57,27,60,97,97,54,97,97,57,27,58,60,97,97,97,38,39,42,71,72,97,
+97,1,4,34,35,97,97,97,97,97,97,97,46,137,145,136,47,97,97,97,97,97,97,97,70,71,72,97,97,97,
 97,33,34,37,67,97,97,97,97,97,99,97,98,46,113,47,99,97,6,7,8,97,97,97,97,97,97,97,97,97,
 97,65,66,67,97,97,97,97,97,97,97,97,97,43,144,45,97,97,38,39,40,97,97,97,97,97,97,97,97,97,
 97,97,97,97,97,97,97,97,97,97,97,97,97,43,146,45,97,97,70,71,72,97,97,97,97,97,97,97,97,97,
@@ -194,11 +226,11 @@
 0,0,0,239,421,420,239,0,193,0,0,0,0,0,193,0,0,0,0,0,0,293,0,420,423,0,0,0,0,0,
 0,0,549,272,305,305,242,0,230,291,292,0,290,291,259,195,292,0,290,291,291,296,0,423,422,0,0,0,0,0,
 0,0,0,0,452,453,239,0,229,0,0,0,0,0,0,225,0,0,0,0,0,293,0,423,420,0,0,583,0,0,
-0,0,0,0,516,517,271,0,257,0,0,0,0,0,0,225,0,0,0,0,0,293,0,269,0,0,6,7,8,0,
-0,551,0,0,0,0,358,0,0,0,0,0,0,0,0,225,0,0,0,0,0,293,0,237,6,7,9,39,40,0,
-0,0,0,208,305,305,242,0,193,0,0,0,0,0,0,225,0,0,0,0,0,293,0,269,38,39,39,548,40,0,
-0,0,0,239,423,420,239,0,258,291,291,291,291,292,0,258,291,291,291,291,291,260,0,233,38,39,42,71,72,0,
-0,0,0,272,305,305,274,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,265,70,71,72,0,0,0,
+0,0,0,0,516,517,271,0,257,0,0,0,0,0,0,225,0,0,0,0,0,293,0,269,0,0,0,0,0,0,
+0,551,0,0,0,0,358,0,0,0,0,0,0,0,0,225,0,0,0,0,0,293,0,237,0,0,0,0,0,0,
+0,0,0,208,305,305,242,0,193,0,0,0,0,0,0,225,0,0,0,0,0,293,0,269,0,0,0,548,0,0,
+0,0,0,239,423,420,239,0,258,291,291,291,291,292,0,258,291,291,291,291,291,260,0,233,0,0,0,0,0,0,
+0,0,0,272,305,305,274,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,265,0,0,0,0,0,0,
 0,0,0,0,0,0,298,205,206,205,206,205,206,300,0,298,206,205,206,205,206,205,206,268,450,451,0,0,0,0,
 0,0,550,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,418,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

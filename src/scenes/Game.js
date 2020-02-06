@@ -40,8 +40,8 @@ export default class extends Phaser.Scene {
     this.level = this.gameOver ? config.levelCount - 1 : params.level;
     const startPosition = showMap(this, 'level' + this.level, this.gameOver);
     if (!this.gameOver) {
-      this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete) => {
-        this.levelResult(total, complete);
+      this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete, steps) => {
+        this.levelResult(total, complete, steps);
       });
     }
 
@@ -160,7 +160,7 @@ export default class extends Phaser.Scene {
     }
   }
 
-  levelResult(total, completed) {
+  levelResult(total, completed, steps) {
     this.upButton.hide();
     this.downButton.hide();
     this.leftButton.hide();
@@ -170,19 +170,28 @@ export default class extends Phaser.Scene {
       this.viking.restorePath();
     }
     const progress = completed / total;
+    const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '[]');
+    while (levels.length <= this.level) {
+      levels.push({score: 0, steps: 0});
+    }
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play(progress > .75 ? 'fanfare' : 'tada');
+      this.sound.play(progress < 1 ? 'tada' : 'fanfare');
     }
     const score = Math.floor(this.map.properties.score * progress);
-    const text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
-    this.panel.show(null, text, config.lang.next, ()  => {
-      const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '[]');
-      while (levels.length <= this.level) {
-        levels.push({score: 0});
+    let text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
+    if (progress === 1) {
+      text += '\n' + config.lang.steps + ': ' + steps;
+      if (levels[this.level].steps && levels[this.level].steps !== steps) {
+        text += ' (' + levels[this.level].steps + ')';
       }
+    }
+    this.panel.show(null, text, config.lang.next, ()  => {
       if (levels[this.level].score < score) {
         config.gameStat.score += score - levels[this.level].score;
         levels[this.level].score = score;
+      }
+      if (progress === 1) {
+        levels[this.level].steps = levels[this.level].steps ? Math.min(steps, levels[this.level].steps) : steps;
       }
       this.level++;
       config.gameStat.completed = Math.max(config.gameStat.completed, this.level);

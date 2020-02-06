@@ -25,7 +25,7 @@ export default class extends Phaser.GameObjects.Container {
   callback;
   path;
 
-  constructor(scene, map, x, y, callback = (total, collected) => {}) {
+  constructor(scene, map, x, y, callback = (total, collected, steps) => {}) {
     super(scene, x * config.gameOptions.tileSize, y * config.gameOptions.tileSize);
 
     this.callback = callback;
@@ -158,12 +158,12 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
-        if (this.gridX === 14 && this.gridY === 31) {
+        if (this.gridX === this.map.properties.endPosX && this.gridY === this.map.properties.endPosY) {
           let total = 0, completed = 0;
           const badItems    = this.map.getLayer('bad_items').data;
           const puzzleItems = this.map.getLayer('puzzle').data;
-          for (y = 0; y < this.scene.bedLayer.layer.height; y++) {
-            for (x = 0; x < this.scene.bedLayer.layer.width; x++) {
+          for (y = 0; y < this.scene.puzzleLayer.layer.height; y++) {
+            for (x = 0; x < this.scene.puzzleLayer.layer.width; x++) {
               if (badItems[y][x].index !== -1) {
                 total++;
                 if (badItems[y][x].index !== puzzleItems[y][x].index) {
@@ -172,7 +172,7 @@ export default class extends Phaser.GameObjects.Container {
               }
             }
           }
-          this.callback(total, completed);
+          this.callback(total, completed, this.path.length - 1);
         }
         if (badItem !== -1 && actualItem !== -1) {
           if (!config.musicMuted && !config.soundsMuted) {

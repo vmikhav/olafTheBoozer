@@ -36,6 +36,10 @@ lang.en.menu = "Menu";
 lang.uk.menu = "Меню";
 lang.ru.menu = "Меню";
 
+lang.en.steps = "Steps";
+lang.uk.steps = "Кроки";
+lang.ru.steps = "Шаги";
+
 lang.en.intro0 = "What a mess! What\nhappened yesterday?\nI don’t remember\nanything...";
 lang.uk.intro0 = "Який безлад! Що\nвчора сталося?\nНічого не пам'ятаю...";
 lang.ru.intro0 = "Какой бардак! Что\nвчера случилось?\nНичего не помню...";
