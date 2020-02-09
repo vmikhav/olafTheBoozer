@@ -9,10 +9,13 @@ export default class extends Phaser.Scene {
   }
 
   preload () {
+    let i, j, k;
     this.load.image('Village_Tileset', 'assets/images/Village_Tileset.png');
-    //this.load.tilemapTiledJSON('baseMap', "assets/maps/base.json");
-    for (let i = 0; i < config.levelCount; i++) {
-      this.load.tilemapTiledJSON('level' + i + 'Map', "assets/maps/level" + i + ".json");
+    for (i = 0; i < config.levelGroups.length; i++) {
+      for (j = 0; j < config.levelGroups[i].length; j++) {
+        k = config.levelGroups[i][j];
+        this.load.tilemapTiledJSON('level' + k + 'Map', "assets/maps/level" + k + ".json");
+      }
     }
     this.load.atlasXML('ui', 'assets/images/uipack_rpg_sheet.png', 'assets/images/uipack_rpg_sheet.xml');
     this.load.image('musicOn', 'assets/images/musicOn.png');

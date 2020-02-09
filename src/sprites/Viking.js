@@ -158,7 +158,7 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
-        if (this.gridX === this.map.properties.endPosX && this.gridY === this.map.properties.endPosY) {
+        if (this.gridX === this.map.properties.endPos.x && this.gridY === this.map.properties.endPos.y) {
           let total = 0, completed = 0;
           const badItems    = this.map.getLayer('bad_items').data;
           const puzzleItems = this.map.getLayer('puzzle').data;

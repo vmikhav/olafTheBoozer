@@ -35,11 +35,13 @@ export default {
   },
   lang: lang.en,
   tutorialFinished: false,
-  levelCount: 3,
+  levelGroups: [
+    [0, 1, 2],
+  ],
   gameStat: {
     started: new Date(),
-    completed: 0,
-    failed: 0,
+    currentGroup: 0,
+    currentLevel: 0,
     score: 0,
   },
   music: null,

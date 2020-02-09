@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import config from '../config';
 import Button from '../components/button'
-import { resetGameStat, showMap } from '../utils'
+import {getCurrentLevel, resetGameStat, showMap} from '../utils'
 
 export default class extends Phaser.Scene {
   startButton;
@@ -21,7 +21,7 @@ export default class extends Phaser.Scene {
   }
 
   create() {
-    const level = config.gameStat.completed === config.levelCount ? config.gameStat.completed - 1 : config.gameStat.completed;
+    const level = getCurrentLevel();
     showMap(this, 'level' + level, true);
 
     const worldView = this.cameras.main.worldView;
@@ -60,7 +60,8 @@ export default class extends Phaser.Scene {
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play('beep');
     }
-    config.gameStat.completed = parseInt(localStorage[config.localStorageName + '.level'] || '0');
+    config.gameStat.currentGroup = parseInt(localStorage[config.localStorageName + '.currentGroup'] || '0');
+    config.gameStat.currentLevel = parseInt(localStorage[config.localStorageName + '.currentLevel'] || '0');
     config.gameStat.score = parseInt(localStorage[config.localStorageName + '.score'] || '0');
     this.tweens.add({
       targets: [this.startButton],
@@ -75,11 +76,11 @@ export default class extends Phaser.Scene {
       duration: 1500,
       delay: 500,
       onComplete: () => {
-        if (config.gameStat.completed === config.levelCount) {
+        if (config.gameStat.currentGroup === config.levelGroups.length) {
           resetGameStat();
         }
         if (config.tutorialFinished) {
-          this.scene.start('GameScene', {level: config.gameStat.completed});
+          this.scene.start('GameScene', {group: config.gameStat.currentGroup, level: config.gameStat.currentLevel, rolling: true});
         } else {
           resetGameStat();
           this.scene.start('IntroScene');

@@ -5,7 +5,7 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
   const properties = {};
   let i;
   for (i = 0; i < scene.map.properties.length; i++) {
-    properties[scene.map.properties[i].name] = scene.map.properties[i].value;
+    properties[scene.map.properties[i].name] = JSON.parse(scene.map.properties[i].value);
   }
   scene.map.properties = properties;
   const scale = Math.floor(config.gameOptions.tileSize / 16);
@@ -36,20 +36,26 @@ export const showMap = (scene, name = 'base', drawRoof = false) => {
       }
     }
   }
-  let coords = null;
-  if (scene.map.properties.hasOwnProperty('startPosX')) {
-    coords = {x: scene.map.properties.startPosX, y: scene.map.properties.startPosY};
-  }
-  return coords;
+  return scene.map.properties.startPos;
 };
 
 export const resetGameStat = () => {
   config.gameStat = {
     started: new Date(),
-    completed: 0,
-    failed: 0,
+    currentGroup: 0,
+    currentLevel: 0,
     score: 0,
   };
+};
+
+export const getCurrentLevel = () => {
+  if (config.gameStat.currentGroup >= config.levelGroups.length) {
+    const group = config.levelGroups[config.levelGroups.length - 1];
+    return group[group.length - 1];
+  } else {
+    const group = config.levelGroups[config.gameStat.currentGroup];
+    return group[Math.min(group.length - 1, config.gameStat.currentLevel)];
+  }
 };
 
 export const g2p = (x, y) => {

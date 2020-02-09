@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const JSONMinifyPlugin = require('node-json-minify');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
@@ -31,7 +32,13 @@ module.exports = {
       cleanOnceBeforeBuildPatterns: ['**/*', path.resolve(__dirname, 'build')],
     }),
     new CopyWebpackPlugin([
-      { from: 'assets', to: 'assets' },
+      { from: 'assets/images', to: 'assets/images' },
+      { from: 'assets/sounds', to: 'assets/sounds' },
+      { from: 'assets/maps', to: 'assets/maps',
+        transform: function(content) {
+          return JSONMinifyPlugin(content.toString());
+        },
+      },
       { from: 'src/manifest.json', to: './manifest.json' },
       { from: 'src/css', to: 'css' },
       { from: 'index.html', to: 'index.html' },
@@ -70,11 +77,13 @@ module.exports = {
       chunks: 'all'
     },
     minimizer: [new TerserPlugin({
+      parallel: true,
       terserOptions: {
         output: {
           comments: false,
         },
       },
+      extractComments: false,
     })],
   }
 };

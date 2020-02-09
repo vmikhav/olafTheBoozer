@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import config from '../config';
-import {resetGameStat, showMap} from '../utils'
+import {getCurrentLevel, resetGameStat, showMap} from '../utils'
 import Button from '../components/button'
 import Panel from '../components/panel'
 import ImageButton from '../components/imageButton'
@@ -28,6 +28,7 @@ export default class extends Phaser.Scene {
   textPanel;
 
   level;
+  params;
 
   constructor () {
     super({ key: 'GameScene' });
@@ -36,11 +37,16 @@ export default class extends Phaser.Scene {
   preload () {}
 
   create (params) {
-    this.gameOver = params.level >= config.levelCount;
-    this.level = this.gameOver ? config.levelCount - 1 : params.level;
+    this.params = params;
+    config.gameStat.currentGroup = params.group;
+    config.gameStat.currentLevel = params.level;
+    localStorage[config.localStorageName + '.currentGroup'] = params.group;
+    localStorage[config.localStorageName + '.currentLevel'] = params.level;
+    this.gameOver = params.group >= config.levelGroups.length || params.level >= config.levelGroups[params.group].length;
+    this.level = getCurrentLevel();
     const startPosition = showMap(this, 'level' + this.level, this.gameOver);
     if (!this.gameOver) {
-      this.viking = new Viking(this, this.map, startPosition.x, startPosition.y, (total, complete, steps) => {
+      this.viking = new Viking(this, this.map, startPosition[0].x, startPosition[0].y, (total, complete, steps) => {
         this.levelResult(total, complete, steps);
       });
     }
@@ -193,15 +199,12 @@ export default class extends Phaser.Scene {
       if (progress === 1) {
         levels[this.level].steps = levels[this.level].steps ? Math.min(steps, levels[this.level].steps) : steps;
       }
-      this.level++;
-      config.gameStat.completed = Math.max(config.gameStat.completed, this.level);
       localStorage[config.localStorageName + '.score'] = config.gameStat.score;
-      localStorage[config.localStorageName + '.level'] = config.gameStat.completed;
       localStorage[config.localStorageName + '.levels'] = JSON.stringify(levels);
       if (this.viking) {
         this.viking.stopped = true;
       }
-      this.restart();
+      this.restart(true);
     });
   }
 
@@ -221,7 +224,7 @@ export default class extends Phaser.Scene {
     }
   }
 
-  restart() {
+  restart(otherLevel = false) {
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play('beep');
     }
@@ -239,7 +242,24 @@ export default class extends Phaser.Scene {
       duration: 1500,
       delay: 500,
       onComplete: () => {
-        this.scene.restart({level: this.level});
+        if (!otherLevel) {
+          this.scene.restart(this.params);
+        } else {
+          if (this.params.rolling) {
+            if (this.params.level === config.levelGroups[this.params.group].length - 1) {
+              //TODO open group selector
+              this.params.group++;
+              this.params.level = 0;
+              this.scene.restart(this.params);
+            } else {
+              this.params.level++;
+              this.scene.restart(this.params);
+            }
+          } else {
+            //TODO open level selector
+            this.scene.start('MainMenuScene');
+          }
+        }
       }
     });
   }
@@ -247,7 +267,6 @@ export default class extends Phaser.Scene {
   openMenu() {
     resetGameStat();
     localStorage[config.localStorageName + '.score'] = 0;
-    localStorage[config.localStorageName + '.level'] = 0;
     this.menuButton.hide();
     this.muteButton.hide();
     this.panel.hide();
