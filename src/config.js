@@ -36,7 +36,7 @@ export default {
   lang: lang.en,
   tutorialFinished: false,
   levelGroups: [
-    [0, 1, 2],
+    [0, 1, 2, 3],
   ],
   gameStat: {
     started: new Date(),
