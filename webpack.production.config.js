@@ -1,10 +1,10 @@
-let path = require('path');
-let webpack = require('webpack');
-let CleanWebpackPlugin = require('clean-webpack-plugin');
-let CopyWebpackPlugin = require('copy-webpack-plugin');
-let HtmlWebpackPlugin = require('html-webpack-plugin');
-let TerserPlugin = require('terser-webpack-plugin');
-let WorkboxPlugin = require('workbox-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 
 module.exports = {
@@ -27,7 +27,9 @@ module.exports = {
       CANVAS_RENDERER: JSON.stringify(true),
       WEBGL_RENDERER: JSON.stringify(true)
     }),
-    new CleanWebpackPlugin(['build']),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', path.resolve(__dirname, 'build')],
+    }),
     new CopyWebpackPlugin([
       { from: 'assets', to: 'assets' },
       { from: 'src/manifest.json', to: './manifest.json' },
@@ -75,4 +77,4 @@ module.exports = {
       },
     })],
   }
-}
+};

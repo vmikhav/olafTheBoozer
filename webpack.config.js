@@ -1,8 +1,8 @@
-let path = require('path');
-let webpack = require('webpack');
-let CleanWebpackPlugin = require('clean-webpack-plugin');
-let BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-let HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -26,7 +26,9 @@ module.exports = {
       CANVAS_RENDERER: JSON.stringify(true),
       WEBGL_RENDERER: JSON.stringify(true)
     }),
-    new CleanWebpackPlugin(['build']),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', path.resolve(__dirname, 'build')],
+    }),
     new HtmlWebpackPlugin({
       filename: '../index.html',
       template: './src/index.html',
@@ -67,4 +69,4 @@ module.exports = {
       chunks: 'all'
     }
   }
-}
+};
