@@ -13,6 +13,7 @@ export default class extends Phaser.GameObjects.Container {
   hiccupSounds;
   actionSounds;
   orientation = 'left';
+  status = 'idle';
 
   cursorKeys;
   isKeyPressed = false;
@@ -21,6 +22,8 @@ export default class extends Phaser.GameObjects.Container {
   stopped = false;
 
   puzzleLayer;
+  behindLayer;
+  frontLayer;
 
   callback;
   path;
@@ -44,15 +47,29 @@ export default class extends Phaser.GameObjects.Container {
       repeatDelay: 1000,
       repeat: -1,
     });
+    scene.anims.create({
+      key: 'viking_naked_left',
+      frames: [ { key: 'viking', frame: 4 }, { key: 'viking', frame: 5 }, { key: 'viking', frame: 4 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
+    scene.anims.create({
+      key: 'viking_naked_right',
+      frames: [ { key: 'viking', frame: 7 }, { key: 'viking', frame: 6 }, { key: 'viking', frame: 7 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
 
     this.scene  = scene;
     this.gridX  = x;
     this.gridY  = y;
-    this.path   = [{x, y}];
+    this.path   = [{x, y, item: -1}];
     this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, 'viking', 5);
     this.sprite.setDisplaySize(config.gameOptions.vikingSize, config.gameOptions.vikingSize);
-    const origin = ((config.gameOptions.vikingSize - config.gameOptions.tileSize) / 2) / config.gameOptions.vikingSize
-    this.sprite.setOrigin(origin, 0.1 + origin);
+    const origin = ((config.gameOptions.vikingSize - config.gameOptions.tileSize) / 2) / config.gameOptions.vikingSize;
+    this.sprite.setOrigin(origin, 0.175 + origin);
     this.map = map;
 
     const style = {fontSize: 16, fontFamily: '"Press Start 2P"'};
@@ -94,12 +111,17 @@ export default class extends Phaser.GameObjects.Container {
       },
       loop: true,
     });
+    this.checkStatus();
 
-    this.sprite.anims.play('viking_idle_' + this.orientation);
+    this.sprite.anims.play('viking_' + this.status + '_' + this.orientation);
 
     this.cursorKeys = scene.input.keyboard.createCursorKeys();
+  }
 
+  checkLayers() {
     this.puzzleLayer = this.map.getLayer('puzzle').tilemapLayer;
+    this.behindLayer = this.map.getLayer('behindViking').tilemapLayer;
+    this.frontLayer = this.map.getLayer('frontViking').tilemapLayer;
   }
 
   update(time, delta) {
@@ -135,12 +157,16 @@ export default class extends Phaser.GameObjects.Container {
     } else if (x < 0) {
       this.orientation = 'left';
     }
-    this.sprite.anims.play('viking_idle_' + this.orientation, true);
     const goodItem   = this.map.getLayer('good_items').data[tmpY][tmpX].index;
     const badItem    = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
     const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
     const wallItem   = this.map.getLayer('walls').data[tmpY][tmpX].index;
-    if ((wallItem !== -1 && actualItem !== 391) || (badItem !== -1 && goodItem !== -1 && actualItem !== badItem)) {
+    if (actualItem === 500) { this.status = 'idle'; }
+    this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);
+    if (
+      (wallItem !== -1 && actualItem !== 391) || (badItem !== -1 && goodItem !== -1 && actualItem !== badItem) ||
+      (this.status === 'naked' && [459, 460, 490, 684, 685, 686, 687].includes(actualItem))
+    ) {
       if (!config.musicMuted && !config.soundsMuted) {
         this.actionSounds['bump'].play();
       }
@@ -149,7 +175,12 @@ export default class extends Phaser.GameObjects.Container {
     this.isMoving = true;
     this.gridX = tmpX;
     this.gridY = tmpY;
-    this.path.push({x: tmpX, y: tmpY});
+    this.path.push({x: tmpX, y: tmpY, item: actualItem === badItem ? actualItem : -1});
+    let overlapItem = this.map.getLayer('behindViking').data[tmpY][tmpX].index;
+    if (overlapItem && y !== -1) {
+      this.frontLayer.putTileAt(overlapItem, tmpX, tmpY);
+    }
+    this.frontLayer.putTileAt(-1, tmpX, tmpY - 1);
     const newCoords = g2p(tmpX, tmpY);
     this.scene.tweens.add({
       targets: this,
@@ -158,6 +189,9 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
+        if (overlapItem && y === -1) {
+          this.frontLayer.putTileAt(overlapItem, tmpX, tmpY);
+        }
         if (this.gridX === this.map.properties.endPos.x && this.gridY === this.map.properties.endPos.y) {
           let total = 0, completed = 0;
           const badItems    = this.map.getLayer('bad_items').data;
@@ -186,11 +220,7 @@ export default class extends Phaser.GameObjects.Container {
           }
 
           this.puzzleLayer.putTileAt(goodItem, tmpX, tmpY);
-          const newGoodItem = this.map.getLayer('good_items').data[tmpY - 1][tmpX].index;
-          const newBadItem = this.map.getLayer('bad_items').data[tmpY - 1][tmpX].index;
-          if (newBadItem === -1 && newGoodItem !== -1) {
-            this.puzzleLayer.putTileAt(newGoodItem, tmpX, tmpY - 1);
-          }
+          this.behindLayer.putTileAt(this.map.getLayer('overlap_items').data[tmpY - 1][tmpX].index, tmpX, tmpY - 1);
         } else {
           if (!config.musicMuted && !config.soundsMuted) {
             this.actionSounds['step'].play();
@@ -206,32 +236,31 @@ export default class extends Phaser.GameObjects.Container {
       return;
     }
     const pos = this.path.pop();
-    const tmpX = pos.x, tmpY = pos.y;
+    const tmpX = pos.x, tmpY = pos.y, item = pos.item;
     const newCoords = g2p(tmpX, tmpY);
     if (tmpX > this.gridX) {
       this.orientation = 'right';
     } else if (tmpX < this.gridX) {
       this.orientation = 'left';
     }
-    this.sprite.anims.play('viking_idle_' + this.orientation, true);
     this.gridX = tmpX;
     this.gridY = tmpY;
-    const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
-    const badItem = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
-    const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
-    if (badItem !== -1) {
-      this.puzzleLayer.putTileAt(badItem, tmpX, tmpY);
-      const newGoodItem = this.map.getLayer('good_items').data[tmpY - 1][tmpX].index;
-      const newBadItem = this.map.getLayer('bad_items').data[tmpY - 1][tmpX].index;
-      if (newBadItem === -1 && newGoodItem !== -1) {
-        this.puzzleLayer.putTileAt(-1, tmpX, tmpY - 1);
-      }
+    if (item !== -1) {
+      this.puzzleLayer.putTileAt(item, tmpX, tmpY);
+      this.behindLayer.putTileAt(-1, tmpX, tmpY - 1);
+      if (item === 500) { this.status = 'naked'; }
     }
+    let overlapItem = this.map.getLayer('behindViking').data[tmpY][tmpX].index;
+    if (overlapItem) {
+      this.frontLayer.putTileAt(overlapItem, tmpX, tmpY);
+    }
+    this.frontLayer.putTileAt(-1, tmpX, tmpY - 1);
     if (!config.musicMuted && !config.soundsMuted) {
-      if (badItem !== -1 && actualItem !== badItem) {
+      if (item !== -1) {
+        const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
         let i;
         for (i = 0; i < config.soundsMap.length; i++) {
-          if (config.soundsMap[i].items.includes(goodItem) || config.soundsMap[i].items.includes(badItem)) {
+          if (config.soundsMap[i].items.includes(goodItem) || config.soundsMap[i].items.includes(item)) {
             break;
           }
         }
@@ -240,6 +269,7 @@ export default class extends Phaser.GameObjects.Container {
         this.actionSounds['step'].play();
       }
     }
+    this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);
     this.scene.tweens.add({
       targets: this,
       x: newCoords.x,
@@ -250,5 +280,19 @@ export default class extends Phaser.GameObjects.Container {
         setTimeout(() => this.restorePath(), 50);
       }
     });
+  }
+
+  checkStatus() {
+    let x, y;
+    const badItems = this.map.getLayer('bad_items').data;
+    for (y = 0; y < this.scene.puzzleLayer.layer.height; y++) {
+      for (x = 0; x < this.scene.puzzleLayer.layer.width; x++) {
+        if (badItems[y][x].index === 500) {
+          y = this.scene.puzzleLayer.layer.height;
+          this.status = 'naked';
+          break;
+        }
+      }
+    }
   }
 }

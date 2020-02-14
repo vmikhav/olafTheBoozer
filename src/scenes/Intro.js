@@ -16,8 +16,7 @@ export default class extends Phaser.Scene {
   preload () {}
 
   create (params) {
-    const startPosition = showMap(this, 'level0', false);
-    this.viking = new Viking(this, this.map, startPosition[0].x, startPosition[0].y);
+    showMap(this, 'level0', false, true);
 
     const worldView = this.cameras.main.worldView;
 

@@ -29,14 +29,14 @@ export default {
     hiccupSounds: ['hrrng', 'hiccup', 'groan'],
     actionSounds: [
       'beep.wav', 'birds.mp3', 'break.wav', 'bump.wav', 'water-step.wav',
-      'glass.wav', 'smash.wav', 'step.wav', 'vomit.wav',
+      'glass.wav', 'smash.wav', 'step.wav', 'vomit.wav', 'drink.wav', 'pickup.wav',
     ],
     finishSounds: ['fanfare.mp3', 'tada.mp3'],
   },
   lang: lang.en,
   tutorialFinished: false,
   levelGroups: [
-    [0, 1, 2, 3],
+    ['0', '1', '2', '3', '4'],
   ],
   gameStat: {
     started: new Date(),
@@ -60,9 +60,11 @@ export default {
     volume: .5,
   },
   soundsMap: [
-    {sound: 'glass', items: [391, 492, 632, ]},
     {sound: 'smash', items: [431, 658, 659, 661, 662, 663, ]},
+    {sound: 'glass', items: [391, 492, 632, ]},
+    {sound: 'drink', items: [557, 589, ]},
+    {sound: 'pickup', items: [500, ]},
     {sound: 'vomit', items: [621, ]},
   ],
-  localStorageName: 'olaf_the_boozer'
+  localStorageName: 'olaf_the_boozer_0'
 }

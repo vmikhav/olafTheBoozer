@@ -44,11 +44,11 @@ export default class extends Phaser.Scene {
     localStorage[config.localStorageName + '.currentLevel'] = params.level;
     this.gameOver = params.group >= config.levelGroups.length || params.level >= config.levelGroups[params.group].length;
     this.level = getCurrentLevel();
-    const startPosition = showMap(this, 'level' + this.level, this.gameOver);
+    showMap(this, 'level' + this.level, this.gameOver, !this.gameOver);
     if (!this.gameOver) {
-      this.viking = new Viking(this, this.map, startPosition[0].x, startPosition[0].y, (total, complete, steps) => {
+      this.viking.callback = (total, complete, steps) => {
         this.levelResult(total, complete, steps);
-      });
+      };
     }
 
     if (!config.music) {
@@ -176,9 +176,9 @@ export default class extends Phaser.Scene {
       this.viking.restorePath();
     }
     const progress = completed / total;
-    const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '[]');
-    while (levels.length <= this.level) {
-      levels.push({score: 0, steps: 0});
+    const levels = JSON.parse(localStorage[config.localStorageName + '.levels'] || '{}');
+    if (!levels.hasOwnProperty(this.level)) {
+      levels[this.level] = {score: 0, steps: 0};
     }
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play(progress < 1 ? 'tada' : 'fanfare');

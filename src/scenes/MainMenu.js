@@ -22,7 +22,7 @@ export default class extends Phaser.Scene {
 
   create() {
     const level = getCurrentLevel();
-    showMap(this, 'level' + level, true);
+    showMap(this, 'level' + level, true, false);
 
     const worldView = this.cameras.main.worldView;
     this.backgroundMask = this.add
