@@ -63,6 +63,7 @@ export default {
     {sound: 'smash', items: [431, 658, 659, 661, 662, 663, ]},
     {sound: 'glass', items: [391, 492, 632, ]},
     {sound: 'drink', items: [557, 589, ]},
+    {sound: 'water-step', items: [614, 615, 646, 647]},
     {sound: 'pickup', items: [500, ]},
     {sound: 'vomit', items: [621, ]},
   ],

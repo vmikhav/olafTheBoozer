@@ -28,6 +28,8 @@ export default class extends Phaser.GameObjects.Container {
   callback;
   path;
 
+  trails = [614, 615, 647, 646];
+
   constructor(scene, map, x, y, callback = (total, collected, steps) => {}) {
     super(scene, x * config.gameOptions.tileSize, y * config.gameOptions.tileSize);
 
@@ -161,11 +163,11 @@ export default class extends Phaser.GameObjects.Container {
     const badItem    = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
     const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
     const wallItem   = this.map.getLayer('walls').data[tmpY][tmpX].index;
-    if (actualItem === 500) { this.status = 'idle'; }
     this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);
+    if (actualItem === 500) { this.status = 'idle'; }
     if (
       (wallItem !== -1 && actualItem !== 391) || (badItem !== -1 && goodItem !== -1 && actualItem !== badItem) ||
-      (this.status === 'naked' && [459, 460, 490, 684, 685, 686, 687].includes(actualItem))
+      (this.status === 'naked' && [459, 460, 490, 684, 685, 686, 687].includes(actualItem) || !this.canStepOnTrail(tmpX, tmpY, actualItem))
     ) {
       if (!config.musicMuted && !config.soundsMuted) {
         this.actionSounds['bump'].play();
@@ -189,6 +191,9 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
+        if (actualItem === 500) {
+          this.sprite.anims.play('viking_' + this.status + '_' + this.orientation, true);
+        }
         if (overlapItem && y === -1) {
           this.frontLayer.putTileAt(overlapItem, tmpX, tmpY);
         }
@@ -246,7 +251,9 @@ export default class extends Phaser.GameObjects.Container {
     this.gridX = tmpX;
     this.gridY = tmpY;
     if (item !== -1) {
-      this.puzzleLayer.putTileAt(item, tmpX, tmpY);
+      if (item !== 500 && !this.trails.includes(item)) {
+        this.puzzleLayer.putTileAt(item, tmpX, tmpY);
+      }
       this.behindLayer.putTileAt(-1, tmpX, tmpY - 1);
       if (item === 500) { this.status = 'naked'; }
     }
@@ -277,6 +284,9 @@ export default class extends Phaser.GameObjects.Container {
       ease: 'Sine.easeInOut',
       duration: config.gameOptions.moveDuration,
       onComplete: () => {
+        if (item !== -1) {
+          this.puzzleLayer.putTileAt(item, tmpX, tmpY);
+        }
         setTimeout(() => this.restorePath(), 50);
       }
     });
@@ -294,5 +304,40 @@ export default class extends Phaser.GameObjects.Container {
         }
       }
     }
+  }
+
+  canStepOnTrail(x, y, actual) {
+    const pos = this.trails.indexOf(actual);
+    const data = this.map.getLayer('puzzle').data;
+    if (pos === -1) {
+      const currentPoint = this.path[this.path.length - 1];
+      const currentItem = currentPoint.item;
+      if (this.trails.includes(currentItem)) {
+        const t = this.trails;
+        const cx = currentPoint.x, cy = currentPoint.y;
+        const offset = this.getNextTrailPosOffset(currentItem);
+        const neighbour = (t.includes(data[cy - 1][cx].index) || t.includes(data[cy + 1][cx].index) || t.includes(data[cy][cx - 1].index) || t.includes(data[cy][cx + 1].index));
+        return !neighbour && x === (cx - offset.fx) && y === (cy - offset.fy);
+      }
+      return true;
+    }
+    // check if can start trail
+    const offset = this.getNextTrailPosOffset(actual);
+
+    const hasNextTrailTile = this.trails.includes(data[y + offset.fy][x + offset.fx].index);
+
+    return !hasNextTrailTile;
+  }
+
+  getNextTrailPosOffset(item) {
+    const pos = this.trails.indexOf(item);
+    const offset = -1 + ((pos % 2) * 2);
+    let fx = 0, fy = 0;
+    if (pos > 1) {
+      fx += offset;
+    } else {
+      fy += offset;
+    }
+    return {fx, fy};
   }
 }
