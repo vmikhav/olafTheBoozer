@@ -11,6 +11,7 @@ export default class extends Phaser.Scene {
   gameOver;
   backgroundMask;
   needBackground;
+  isRestarting;
 
   viking;
   map;
@@ -50,6 +51,7 @@ export default class extends Phaser.Scene {
         this.levelResult(total, complete, steps);
       };
     }
+    this.isRestarting = false;
 
     if (!config.music) {
       config.music = this.sound.add('birds', config.musicParams);
@@ -76,6 +78,7 @@ export default class extends Phaser.Scene {
           'buttonSquare_brown', config.musicMuted ? 'musicOff' : 'musicOn', () => {this.changeMuteState(!config.musicMuted);}).setAlpha(0);
         this.add.existing(this.muteButton);
         this.muteButton.show();
+        this.input.keyboard.on('keyup-M', event => { this.muteButton.clickCallback(); });
 
         this.panel = new Panel(this, worldView.centerX, worldView.bottom - 125, 600, 160);
         this.add.existing(this.panel);
@@ -101,6 +104,7 @@ export default class extends Phaser.Scene {
             text += config.lang.highScore + ': ' + (localStorage[config.localStorageName + scoreLabel] || 0);
           }
           this.panel.show(null, text);
+          this.input.keyboard.on('keyup-SPACE', event => { this.openMenu(); });
         } else {
           this.restartButton = new ImageButton(this, worldView.right - 60, worldView.top + 60, 80, 80,
             'buttonSquare_brown', 'restart', () => {this.restart();}).setAlpha(0);
@@ -123,20 +127,27 @@ export default class extends Phaser.Scene {
             this.textPanel.hide();
             this.add.existing(this.restartButton); this.restartButton.show();
             this.add.existing(this.upButton); this.upButton.show();
-            this.add.existing(this.downButton); this.downButton.show();
             this.add.existing(this.leftButton); this.leftButton.show();
             this.add.existing(this.rightButton); this.rightButton.show();
+            this.add.existing(this.downButton); this.downButton.show();
           };
 
           const showDialog = index => {
             if (config.lang['level'+this.level].length > index) {
               this.textPanel.show(null,config.lang['level'+this.level][index], config.lang.next, () => showDialog(index + 1));
             } else {
+              config.levelIntoShowed['level'+this.level] = true;
               showButtons();
             }
           };
 
-          config.lang.hasOwnProperty('level'+this.level) ? showDialog(0) : showButtons();
+          config.lang.hasOwnProperty('level'+this.level) && !config.levelIntoShowed['level'+this.level] ? showDialog(0) : showButtons();
+
+          this.input.keyboard.on('keyup-R', event => { this.restart(); });
+          this.input.keyboard.on('keyup-SPACE', event => {
+            if (this.textPanel.isShowed) {this.textPanel.clickCallback();}
+            else if (this.panel.isShowed) {this.panel.clickCallback();}
+          });
         }
       }
     });
@@ -192,6 +203,8 @@ export default class extends Phaser.Scene {
       }
     }
     this.panel.show(null, text, config.lang.next, ()  => {
+      if (this.isRestarting) {return;}
+      this.isRestarting = true;
       if (levels[this.level].score < score) {
         config.gameStat.score += score - levels[this.level].score;
         levels[this.level].score = score;
@@ -225,6 +238,8 @@ export default class extends Phaser.Scene {
   }
 
   restart(otherLevel = false) {
+    if (this.isRestarting && !otherLevel) {return;}
+    this.isRestarting = true;
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play('beep');
     }
@@ -265,6 +280,8 @@ export default class extends Phaser.Scene {
   }
 
   openMenu() {
+    if (this.isRestarting) {return;}
+    this.isRestarting = true;
     resetGameStat();
     localStorage[config.localStorageName + '.score'] = 0;
     this.menuButton.hide();

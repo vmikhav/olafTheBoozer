@@ -16,6 +16,7 @@ export default class extends Phaser.GameObjects.Container {
   status = 'idle';
 
   cursorKeys;
+  wasdKeys;
   isKeyPressed = false;
   isMoving = false;
   canMove = true;
@@ -118,6 +119,7 @@ export default class extends Phaser.GameObjects.Container {
     this.sprite.anims.play('viking_' + this.status + '_' + this.orientation);
 
     this.cursorKeys = scene.input.keyboard.createCursorKeys();
+    this.wasdKeys = scene.input.keyboard.addKeys('W,S,A,D');
   }
 
   checkLayers() {
@@ -130,13 +132,13 @@ export default class extends Phaser.GameObjects.Container {
     if (!this.isKeyPressed && !this.isMoving) {
       if (!this.isMoving) {
         let direction = {x: 0, y: 0};
-        if (this.cursorKeys.up.isDown) {
+        if (this.cursorKeys.up.isDown || this.wasdKeys.W.isDown) {
           direction.y = -1;
-        } else if (this.cursorKeys.down.isDown) {
+        } else if (this.cursorKeys.down.isDown || this.wasdKeys.S.isDown) {
           direction.y = 1;
-        } else if (this.cursorKeys.left.isDown) {
+        } else if (this.cursorKeys.left.isDown || this.wasdKeys.A.isDown) {
           direction.x = -1;
-        } else if (this.cursorKeys.right.isDown) {
+        } else if (this.cursorKeys.right.isDown || this.wasdKeys.D.isDown) {
           direction.x = 1;
         } else {
           this.isKeyPressed = false;
@@ -147,6 +149,9 @@ export default class extends Phaser.GameObjects.Container {
       }
     } else {
       this.isKeyPressed = this.cursorKeys.up.isDown || this.cursorKeys.down.isDown || this.cursorKeys.right.isDown || this.cursorKeys.left.isDown;
+      if (!this.isKeyPressed) {
+        this.isKeyPressed = this.wasdKeys.W.isDown || this.wasdKeys.S.isDown || this.wasdKeys.A.isDown || this.wasdKeys.D.isDown;
+      }
     }
   }
 

@@ -36,6 +36,7 @@ export default class extends Phaser.Scene {
         this.add.existing(this.panel);
 
         this.introStep0();
+        this.input.keyboard.on('keyup-SPACE', event => { if (this.panel.isShowed) {this.panel.clickCallback();} });
       }
     });
   }

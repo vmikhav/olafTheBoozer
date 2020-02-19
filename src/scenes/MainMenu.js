@@ -8,6 +8,8 @@ export default class extends Phaser.Scene {
   moveDistance;
   backgroundMask;
 
+  isStarting;
+
   viking;
 
   constructor() {
@@ -31,6 +33,8 @@ export default class extends Phaser.Scene {
       .setAlpha(1)
       .setScrollFactor(0);
 
+    this.isStarting = false;
+
     this.tweens.add({
       targets: this.backgroundMask,
       alpha: 0.35,
@@ -47,16 +51,17 @@ export default class extends Phaser.Scene {
           ease: 'Sine.easeOut',
           duration: 1000,
         });
+        this.input.keyboard.on('keyup-SPACE', event => { this.start() });
       }
     });
-
-    this.cursorKeys = this.input.keyboard.createCursorKeys();
   }
 
   update(args) {
   }
 
   start() {
+    if (this.isStarting) {return;}
+    this.isStarting = true;
     if (!config.musicMuted && !config.soundsMuted) {
       this.sound.play('beep');
     }

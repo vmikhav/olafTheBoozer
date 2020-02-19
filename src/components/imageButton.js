@@ -1,7 +1,10 @@
 export default class ImageButton extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, width, height, frame, image, callback) {
+  callback;
+
+  constructor(scene, x, y, width, height, frame, image, callback = () => {}) {
     super(scene, x, y);
 
+    this.callback = callback;
     this.frame = frame;
     this.buttonHeight = height;
     this.button = new Phaser.GameObjects.Image(scene, 0, 0, 'ui', this.frame + '.png');
@@ -12,7 +15,7 @@ export default class ImageButton extends Phaser.GameObjects.Container {
       .on('pointerout', () => this.enterButtonNormalState() )
       .on('pointerup', () => {
         this.enterButtonNormalState();
-        callback();
+        this.clickCallback();
       });
 
     this.image = new Phaser.GameObjects.Image(scene, 0, 0, image).setDisplaySize(width - 30, height - 30);
@@ -23,6 +26,10 @@ export default class ImageButton extends Phaser.GameObjects.Container {
 
   setImage(image, frame = null) {
     this.image.setTexture(image, frame);
+  }
+
+  clickCallback() {
+    this.callback();
   }
 
   enterButtonNormalState() {
@@ -39,7 +46,7 @@ export default class ImageButton extends Phaser.GameObjects.Container {
     this.isShowed = true;
     this.scene.tweens.add({
       targets: this,
-      alpha: {from: 0, to: 1},
+      alpha: 1,
       ease: 'Sine.easeOut',
       duration: 1000,
     });
@@ -49,7 +56,7 @@ export default class ImageButton extends Phaser.GameObjects.Container {
     if (!this.isShowed) {return;}
     this.scene.tweens.add({
       targets: this,
-      alpha: {from: 1, to: 0},
+      alpha: 0,
       ease: 'Sine.easeOut',
       duration: 1000,
       onComplete: () => {

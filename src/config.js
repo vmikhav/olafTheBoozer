@@ -38,6 +38,7 @@ export default {
   levelGroups: [
     ['0', '1', '2', '3', '4'],
   ],
+  levelIntoShowed: {},
   gameStat: {
     started: new Date(),
     currentGroup: 0,

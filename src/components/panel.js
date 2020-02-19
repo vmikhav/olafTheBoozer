@@ -78,7 +78,7 @@ export default class Panel extends Phaser.GameObjects.Container {
         alpha: 1,
         duration: 500,
         ease: 'Sine.easeOut',
-        delay: this.isShowed ? 1000 : 2000
+        delay: this.isShowed ? 500 : 1000
       });
     }
     this.isShowed = true;
