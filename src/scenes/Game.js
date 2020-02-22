@@ -21,6 +21,7 @@ export default class extends Phaser.Scene {
   menuButton;
   muteButton;
   restartButton;
+  backStepButton;
   upButton;
   downButton;
   leftButton;
@@ -30,6 +31,8 @@ export default class extends Phaser.Scene {
 
   level;
   params;
+
+  fixedElements;
 
   constructor () {
     super({ key: 'GameScene' });
@@ -50,8 +53,10 @@ export default class extends Phaser.Scene {
       this.viking.callback = (total, complete, steps) => {
         this.levelResult(total, complete, steps);
       };
+      this.cameras.main.startFollow(this.viking, true, 0.05, 0.05);
     }
     this.isRestarting = false;
+    this.fixedElements = [];
 
     if (!config.music) {
       config.music = this.sound.add('birds', config.musicParams);
@@ -67,20 +72,21 @@ export default class extends Phaser.Scene {
       this.add.existing(this.clouds[i]);
     }
 
-    const worldView = this.cameras.main.worldView;
+    const camera = this.cameras.main;
+    const worldView = {top: 0, left: 0, bottom: camera.height, right: camera.width, centerX: camera.width / 2, centerY: camera.height / 2};
 
-    this.needBackground = this.level > 0;
+    this.needBackground = true;
 
     this.time.addEvent({
       delay: 100,
       callback: () => {
-        this.muteButton = new ImageButton(this, worldView.left + 60, worldView.top + 60, 80, 80,
-          'buttonSquare_brown', config.musicMuted ? 'musicOff' : 'musicOn', () => {this.changeMuteState(!config.musicMuted);}).setAlpha(0);
+        this.muteButton = new ImageButton(this, worldView.left + 60, worldView.top + 60, 80, 80, 'buttonSquare_brown',
+          config.musicMuted ? 'musicOff' : 'musicOn', () => {this.changeMuteState(!config.musicMuted);}).setAlpha(0).setScrollFactor(0, 0, true);
         this.add.existing(this.muteButton);
         this.muteButton.show();
         this.input.keyboard.on('keyup-M', event => { this.muteButton.clickCallback(); });
 
-        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 125, 600, 160);
+        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 125, 600, 160).setScrollFactor(0, 0, true);
         this.add.existing(this.panel);
 
         if (this.gameOver) {
@@ -88,6 +94,7 @@ export default class extends Phaser.Scene {
             this.viking.canMove = false;
           }
           this.menuButton = new Button(this, worldView.centerX, worldView.top - 100, 300, 120, config.lang.menu, 'buttonLong_brown', () => this.openMenu());
+          this.menuButton.setScrollFactor(0, 0, true);
           this.add.existing(this.menuButton);
           this.tweens.add({
             targets: this.menuButton,
@@ -107,18 +114,20 @@ export default class extends Phaser.Scene {
           this.input.keyboard.on('keyup-SPACE', event => { this.openMenu(); });
         } else {
           this.restartButton = new ImageButton(this, worldView.right - 60, worldView.top + 60, 80, 80,
-            'buttonSquare_brown', 'restart', () => {this.restart();}).setAlpha(0);
+            'buttonSquare_brown', 'restart', () => {this.restart();}).setAlpha(0).setScrollFactor(0, 0, true);
+          this.backStepButton = new ImageButton(this, worldView.right - 170, worldView.top + 60, 80, 80,
+            'buttonSquare_brown', 'backStep', () => {this.stepBack();}).setAlpha(0).setScrollFactor(0, 0, true);
 
-          this.upButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 250, 100, 100,
-            'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}).setAlpha(0);
-          this.leftButton = new ImageButton(this, worldView.right - 220, worldView.bottom - 155, 100, 100,
-            'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}).setAlpha(0);
-          this.rightButton = new ImageButton(this, worldView.right - 60, worldView.bottom - 155, 100, 100,
-            'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}).setAlpha(0);
-          this.downButton = new ImageButton(this, worldView.right - 140, worldView.bottom - 60, 100, 100,
-            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0);
+          this.upButton = new ImageButton(this, worldView.right - 200, worldView.bottom - 310, 120, 120,
+            'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}).setAlpha(0).setScrollFactor(0, 0, true);
+          this.leftButton = new ImageButton(this, worldView.right - 315, worldView.bottom - 195, 120, 120,
+            'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}).setAlpha(0).setScrollFactor(0, 0, true);
+          this.rightButton = new ImageButton(this, worldView.right - 85, worldView.bottom - 195, 120, 120,
+            'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}).setAlpha(0).setScrollFactor(0, 0, true);
+          this.downButton = new ImageButton(this, worldView.right - 200, worldView.bottom - 80, 120, 120,
+            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0).setScrollFactor(0, 0, true);
 
-          this.textPanel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300);
+          this.textPanel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300).setScrollFactor(0, 0, true);
           this.add.existing(this.textPanel);
 
           this.viking.canMove = false;
@@ -126,6 +135,7 @@ export default class extends Phaser.Scene {
             this.viking.canMove = true;
             this.textPanel.hide();
             this.add.existing(this.restartButton); this.restartButton.show();
+            this.add.existing(this.backStepButton); this.backStepButton.show();
             this.add.existing(this.upButton); this.upButton.show();
             this.add.existing(this.leftButton); this.leftButton.show();
             this.add.existing(this.rightButton); this.rightButton.show();
@@ -169,6 +179,18 @@ export default class extends Phaser.Scene {
         }
       });
     }
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.fixedElements = [
+          this.muteButton, this.restartButton, this.backStepButton,
+          this.upButton, this.leftButton, this.rightButton, this.downButton,
+          this.panel, this.textPanel,
+        ];
+        this.onResize();
+      }
+    });
   }
 
   update(time, delta) {
@@ -177,7 +199,19 @@ export default class extends Phaser.Scene {
     }
   }
 
+  onResize() {
+    let i;
+    for (i = 0; i < this.fixedElements.length; i++) {
+      if (this.fixedElements[i]) {this.fixedElements[i].setScrollFactor(0, 0, true);}
+    }
+  }
+
+  stepBack() {
+    this.viking.restorePath(false);
+  }
+
   levelResult(total, completed, steps) {
+    this.backStepButton.hide();
     this.upButton.hide();
     this.downButton.hide();
     this.leftButton.hide();

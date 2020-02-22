@@ -39,7 +39,7 @@ export default class Panel extends Phaser.GameObjects.Container {
     this.text = new Phaser.GameObjects.Text(scene, this.left + 50, this.top + topOffset, '', style);
     this.text.lineSpacing = 20;
 
-    this.button = new Button(scene, this.right - 100, this.top - 50, 200, 80, 'Ok', 'buttonMiddle_brown', () => this.clickCallback());
+    this.button = new Button(scene, this.right - 100, this.top - 50, 200, 100, 'Ok', 'buttonMiddle_brown', () => this.clickCallback());
 
     this.add([this.portrait, this.panel, this.text, this.button]);
     this.setVisible(false);
@@ -78,7 +78,10 @@ export default class Panel extends Phaser.GameObjects.Container {
         alpha: 1,
         duration: 500,
         ease: 'Sine.easeOut',
-        delay: this.isShowed ? 500 : 1000
+        delay: this.isShowed ? 500 : 1000,
+        onComplete: () => {
+          this.button.setScrollFactor(0, 0, true);
+        }
       });
     }
     this.isShowed = true;

@@ -241,20 +241,35 @@ export default class extends Phaser.GameObjects.Container {
     });
   }
 
-  restorePath() {
+  restorePath(chain = true) {
     if (this.stopped || !this.path.length) {
       return;
     }
+    if (!chain && this.path.length < 2) {return;}
     const pos = this.path.pop();
     const tmpX = pos.x, tmpY = pos.y, item = pos.item;
-    const newCoords = g2p(tmpX, tmpY);
-    if (tmpX > this.gridX) {
-      this.orientation = 'right';
-    } else if (tmpX < this.gridX) {
-      this.orientation = 'left';
+    let newCoords;
+    if (chain) {
+      newCoords = g2p(tmpX, tmpY);
+      if (tmpX > this.gridX) {
+        this.orientation = 'right';
+      } else if (tmpX < this.gridX) {
+        this.orientation = 'left';
+      }
+      this.gridX = tmpX;
+      this.gridY = tmpY;
+    } else {
+      const xPos = this.path[this.path.length - 1];
+      const xTmpX = xPos.x, xTmpY = xPos.y;
+      newCoords = g2p(xTmpX, xTmpY);
+      if (xTmpX > this.gridX) {
+        this.orientation = 'left';
+      } else if (xTmpX < this.gridX) {
+        this.orientation = 'right';
+      }
+      this.gridX = xTmpX;
+      this.gridY = xTmpY;
     }
-    this.gridX = tmpX;
-    this.gridY = tmpY;
     if (item !== -1) {
       if (item !== 500 && !this.trails.includes(item)) {
         this.puzzleLayer.putTileAt(item, tmpX, tmpY);
@@ -292,7 +307,9 @@ export default class extends Phaser.GameObjects.Container {
         if (item !== -1) {
           this.puzzleLayer.putTileAt(item, tmpX, tmpY);
         }
-        setTimeout(() => this.restorePath(), 50);
+        if (chain) {
+          setTimeout(() => this.restorePath(), 50);
+        }
       }
     });
   }

@@ -21,6 +21,7 @@ export default class extends Phaser.Scene {
     this.load.image('musicOn', 'assets/images/musicOn.png');
     this.load.image('musicOff', 'assets/images/musicOff.png');
     this.load.image('restart', 'assets/images/restart.png');
+    this.load.image('backStep', 'assets/images/backStep.png');
     this.load.image('up', 'assets/images/up.png');
     this.load.image('down', 'assets/images/down.png');
     this.load.image('left', 'assets/images/left.png');

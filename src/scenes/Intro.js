@@ -8,6 +8,10 @@ import Viking from "../sprites/Viking";
 export default class extends Phaser.Scene {
   viking;
   skipButton;
+  backgroundMask;
+  needBackground;
+
+  fixedElements;
 
   constructor () {
     super({ key: 'IntroScene' });
@@ -17,14 +21,19 @@ export default class extends Phaser.Scene {
 
   create (params) {
     showMap(this, 'level0', false, true);
+    this.cameras.main.startFollow(this.viking, true, 0.05, 0.05);
+    this.needBackground = true;
+    this.fixedElements = [];
 
-    const worldView = this.cameras.main.worldView;
+    const camera = this.cameras.main;
+    const worldView = {top: 0, left: 0, bottom: camera.height, right: camera.width, centerX: camera.width / 2, centerY: camera.height / 2};
 
     this.time.addEvent({
       delay: 100,
       callback: () => {
         this.skipButton = new Button(this, worldView.right - 135, worldView.top - 100, 250, 80, config.lang.skip, 'buttonLong_brown', () => this.startGame());
         this.add.existing(this.skipButton);
+        this.skipButton.setScrollFactor(0, 0, true);
         this.tweens.add({
           targets: this.skipButton,
           y: worldView.top + 60,
@@ -32,16 +41,46 @@ export default class extends Phaser.Scene {
           duration: 3000,
         });
 
-        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300);
+        this.panel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300).setScrollFactor(0, 0, true);
         this.add.existing(this.panel);
 
         this.introStep0();
         this.input.keyboard.on('keyup-SPACE', event => { if (this.panel.isShowed) {this.panel.clickCallback();} });
       }
     });
+
+    this.backgroundMask = this.add
+      .rectangle(0, 0, config.gameOptions.maxWidth, config.gameOptions.maxHeight, 0x000000)
+      .setOrigin(0)
+      .setAlpha(this.needBackground ? 1 : 0)
+      .setScrollFactor(0);
+
+    if (this.needBackground) {
+      this.tweens.add({
+        targets: [this.backgroundMask],
+        alpha: { from: 1, to: 0 },
+        ease: 'Sine.easeOut',
+        duration: 1000,
+      });
+    }
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.fixedElements = [this.skipButton, this.panel];
+        this.onResize();
+      }
+    });
   }
 
   update() {
+  }
+
+  onResize() {
+    let i;
+    for (i = 0; i < this.fixedElements.length; i++) {
+      if (this.fixedElements[i]) {this.fixedElements[i].setScrollFactor(0, 0, true);}
+    }
   }
 
   introStep0() {

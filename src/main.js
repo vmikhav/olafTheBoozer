@@ -22,6 +22,7 @@ class Game extends Phaser.Game {
       config.lang = lang[userLang];
     }
     config.tutorialFinished = localStorage[config.localStorageName + '.tutorialFinished'] === 'true';
+    config.musicMuted = localStorage[config.localStorageName + '.muted'] === 'true';
 
     const resize = () => {
       const w = window.innerWidth;
@@ -82,10 +83,15 @@ class Game extends Phaser.Game {
 
       if (h > 20) {
         const scene = this.scene.getScenes(true)[0] || null;
-        if (scene && scene.hasOwnProperty('map')) {
-          const x = Math.floor(scene.map.widthInPixels * config.gameOptions.tileSize / 32);
-          const y = Math.floor(scene.map.heightInPixels * config.gameOptions.tileSize / 32);
-          scene.cameras.main.centerOn(scene.map.widthInPixels, scene.map.heightInPixels);
+        if (scene) {
+          if (scene.hasOwnProperty('map')) {
+            const x = Math.floor(scene.map.widthInPixels * (config.gameOptions.tileSize / 16) / 2);
+            const y = Math.floor(scene.map.heightInPixels * (config.gameOptions.tileSize / 16) / 2);
+            scene.cameras.main.centerOn(x, y);
+          }
+          if (scene.hasOwnProperty('onResize')) {
+            scene.onResize();
+          }
         }
       }
     };

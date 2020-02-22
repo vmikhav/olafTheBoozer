@@ -11,6 +11,7 @@ export default class extends Phaser.Scene {
   isStarting;
 
   viking;
+  fixedElements;
 
   constructor() {
     super({key: 'MainMenuScene'});
@@ -25,8 +26,10 @@ export default class extends Phaser.Scene {
   create() {
     const level = getCurrentLevel();
     showMap(this, 'level' + level, true, false);
+    this.fixedElements = [];
 
-    const worldView = this.cameras.main.worldView;
+    const camera = this.cameras.main;
+    const worldView = {top: 0, left: 0, bottom: camera.height, right: camera.width, centerX: camera.width / 2, centerY: camera.height / 2};
     this.backgroundMask = this.add
       .rectangle(0, 0, config.gameOptions.maxWidth, config.gameOptions.maxHeight, 0x000000)
       .setOrigin(0)
@@ -45,6 +48,7 @@ export default class extends Phaser.Scene {
         this.moveDistance = (worldView.centerY - 200) - (worldView.top - 500);
         this.startButton = new Button(this, worldView.centerX, worldView.top - 500, 500, 150, config.lang.play, 'buttonLong_brown', () => this.start());
         this.add.existing(this.startButton);
+        this.startButton.setScrollFactor(0, 0, true);
         this.tweens.add({
           targets: [this.startButton],
           y: '+=' + this.moveDistance,
@@ -54,9 +58,24 @@ export default class extends Phaser.Scene {
         this.input.keyboard.on('keyup-SPACE', event => { this.start() });
       }
     });
+
+    this.time.addEvent({
+      delay: 2000,
+      callback: () => {
+        this.fixedElements = [this.startButton];
+        this.onResize();
+      }
+    });
   }
 
   update(args) {
+  }
+
+  onResize() {
+    let i;
+    for (i = 0; i < this.fixedElements.length; i++) {
+      if (this.fixedElements[i]) {this.fixedElements[i].setScrollFactor(0, 0, true);}
+    }
   }
 
   start() {
@@ -76,7 +95,7 @@ export default class extends Phaser.Scene {
     });
     this.tweens.add({
       targets: this.backgroundMask,
-      alpha: 0,
+      alpha: 1,
       ease: 'Sine.easeOut',
       duration: 1500,
       delay: 500,

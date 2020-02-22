@@ -36,10 +36,15 @@ export const showMap = (scene, name = 'base', drawRoof = false, addViking = true
     scene.roofLayer.visible = false;
     scene.roofLayer.alpha = 0;
   }
+  const width  = scene.map.widthInPixels * (config.gameOptions.tileSize / 16);
+  const height = scene.map.heightInPixels * (config.gameOptions.tileSize / 16);
+  scene.cameras.main.setBounds(0, 0, width, height);
   let x, y;
-  x = Math.floor(scene.map.widthInPixels * config.gameOptions.tileSize / 32);
-  y = Math.floor(scene.map.heightInPixels * config.gameOptions.tileSize / 32);
-  scene.cameras.main.centerOn(x, y);
+  if (drawRoof) {
+    x = Math.floor(width / 2);
+    y = Math.floor(height / 2);
+    scene.cameras.main.centerOn(x, y);
+  }
   const showedItems = scene.map.getLayer(drawRoof ? 'good_items' : 'bad_items').data;
   const badItems = scene.map.getLayer('bad_items').data;
   const overlapItems = scene.map.getLayer('overlap_items').data;
