@@ -89,14 +89,14 @@ export default class extends Phaser.Scene {
 
   introStep1() {
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play('beep');
+      this.sound.play('beep', config.soundParams);
     }
     this.panel.show(null, config.lang.intro1, config.lang.play, () => this.startGame());
   }
 
   startGame() {
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play('beep');
+      this.sound.play('beep', config.soundParams);
     }
     config.tutorialFinished = true;
     localStorage[config.localStorageName + '.tutorialFinished'] = config.tutorialFinished;

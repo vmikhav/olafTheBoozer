@@ -65,6 +65,41 @@ export default class extends Phaser.Scene {
     this.textures.get('portraits').setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.textures.get('viking').setFilter(Phaser.Textures.FilterMode.NEAREST);
 
+    this.anims.create({
+      key: 'boom_creating',
+      frames: this.anims.generateFrameNumbers('boom', { start: 0, end: 14 }),
+      frameRate: 30,
+      repeat: 0
+    });
+    this.anims.create({
+      key: 'viking_idle_left',
+      frames: [ { key: 'viking', frame: 0 }, { key: 'viking', frame: 1 }, { key: 'viking', frame: 0 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'viking_idle_right',
+      frames: [ { key: 'viking', frame: 3 }, { key: 'viking', frame: 2 }, { key: 'viking', frame: 3 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'viking_naked_left',
+      frames: [ { key: 'viking', frame: 4 }, { key: 'viking', frame: 5 }, { key: 'viking', frame: 4 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'viking_naked_right',
+      frames: [ { key: 'viking', frame: 7 }, { key: 'viking', frame: 6 }, { key: 'viking', frame: 7 } ],
+      frameRate: 5,
+      repeatDelay: 1000,
+      repeat: -1,
+    });
+
     this.scene.start('MainMenuScene');
   }
 

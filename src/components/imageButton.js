@@ -42,23 +42,23 @@ export default class ImageButton extends Phaser.GameObjects.Container {
     this.image.setY(Math.floor(this.buttonHeight / 25));
   }
 
-  show() {
+  show(duration = 1000) {
     this.isShowed = true;
     this.scene.tweens.add({
       targets: this,
       alpha: 1,
       ease: 'Sine.easeOut',
-      duration: 1000,
+      duration: duration,
     });
   }
 
-  hide() {
+  hide(duration = 1000) {
     if (!this.isShowed) {return;}
     this.scene.tweens.add({
       targets: this,
       alpha: 0,
       ease: 'Sine.easeOut',
-      duration: 1000,
+      duration: duration,
       onComplete: () => {
         this.isShowed = false;
       }

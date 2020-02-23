@@ -88,13 +88,13 @@ export default class Panel extends Phaser.GameObjects.Container {
     this.setVisible(true);
   }
 
-  hide() {
+  hide(duration = 1000) {
     if (this.isShowed) {
       this.scene.tweens.add({
         targets: this,
         alpha: {from: 1, to: 0},
         ease: 'Sine.easeOut',
-        duration: 1000,
+        duration: duration,
         onComplete: () => {
           this.setVisible(false);
           this.isShowed = false;

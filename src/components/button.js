@@ -36,23 +36,23 @@ export default class Button extends Phaser.GameObjects.Container {
     this.text.setText(text);
   }
 
-  show() {
+  show(duration = 1000) {
     this.isShowed = true;
     this.scene.tweens.add({
       targets: this,
       alpha: {from: 0, to: 1},
       ease: 'Sine.easeOut',
-      duration: 1000,
+      duration: duration,
     });
   }
 
-  hide() {
+  hide(duration = 1000) {
     if (!this.isShowed) {return;}
     this.scene.tweens.add({
       targets: this,
       alpha: {from: 1, to: 0},
       ease: 'Sine.easeOut',
-      duration: 1000,
+      duration: duration,
       onComplete: () => {
         this.isShowed = false;
       }

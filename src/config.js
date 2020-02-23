@@ -50,7 +50,7 @@ export default {
   soundsMuted: false,
   musicParams: {
     mute: false,
-    volume: .5,
+    volume: .15,
     rate: 1,
     detune: 0,
     seek: 0,
@@ -58,7 +58,7 @@ export default {
     delay: 500
   },
   soundParams: {
-    volume: .5,
+    volume: .25,
   },
   soundsMap: [
     {sound: 'smash', items: [431, 658, 659, 661, 662, 663, ]},

@@ -82,7 +82,7 @@ export default class extends Phaser.Scene {
     if (this.isStarting) {return;}
     this.isStarting = true;
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play('beep');
+      this.sound.play('beep', config.soundParams);
     }
     config.gameStat.currentGroup = parseInt(localStorage[config.localStorageName + '.currentGroup'] || '0');
     config.gameStat.currentLevel = parseInt(localStorage[config.localStorageName + '.currentLevel'] || '0');

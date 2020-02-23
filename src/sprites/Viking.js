@@ -36,35 +36,6 @@ export default class extends Phaser.GameObjects.Container {
 
     this.callback = callback;
 
-    scene.anims.create({
-      key: 'viking_idle_left',
-      frames: [ { key: 'viking', frame: 0 }, { key: 'viking', frame: 1 }, { key: 'viking', frame: 0 } ],
-      frameRate: 5,
-      repeatDelay: 1000,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: 'viking_idle_right',
-      frames: [ { key: 'viking', frame: 3 }, { key: 'viking', frame: 2 }, { key: 'viking', frame: 3 } ],
-      frameRate: 5,
-      repeatDelay: 1000,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: 'viking_naked_left',
-      frames: [ { key: 'viking', frame: 4 }, { key: 'viking', frame: 5 }, { key: 'viking', frame: 4 } ],
-      frameRate: 5,
-      repeatDelay: 1000,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: 'viking_naked_right',
-      frames: [ { key: 'viking', frame: 7 }, { key: 'viking', frame: 6 }, { key: 'viking', frame: 7 } ],
-      frameRate: 5,
-      repeatDelay: 1000,
-      repeat: -1,
-    });
-
     this.scene  = scene;
     this.gridX  = x;
     this.gridY  = y;
@@ -102,7 +73,7 @@ export default class extends Phaser.GameObjects.Container {
         const n = Phaser.Math.Between(0, this.hiccupSounds.length - 1);
         this.hiccupText.setText('* ' + this.hiccupSounds[n].str + ' *');
         if (!config.musicMuted && !config.soundsMuted) {
-          this.hiccupSounds[n].sound.play();
+          this.hiccupSounds[n].sound.play(config.soundParams);
         }
         scene.tweens.add({
           targets: this.hiccupText,
@@ -175,7 +146,7 @@ export default class extends Phaser.GameObjects.Container {
       (this.status === 'naked' && [459, 460, 490, 684, 685, 686, 687].includes(actualItem) || !this.canStepOnTrail(tmpX, tmpY, actualItem))
     ) {
       if (!config.musicMuted && !config.soundsMuted) {
-        this.actionSounds['bump'].play();
+        this.actionSounds['bump'].play(config.soundParams);
       }
       return;
     }
@@ -226,14 +197,14 @@ export default class extends Phaser.GameObjects.Container {
                 break;
               }
             }
-            this.actionSounds[i === config.soundsMap.length ? 'break' : config.soundsMap[i].sound].play();
+            this.actionSounds[i === config.soundsMap.length ? 'break' : config.soundsMap[i].sound].play(config.soundParams);
           }
 
           this.puzzleLayer.putTileAt(goodItem, tmpX, tmpY);
           this.behindLayer.putTileAt(this.map.getLayer('overlap_items').data[tmpY - 1][tmpX].index, tmpX, tmpY - 1);
         } else {
           if (!config.musicMuted && !config.soundsMuted) {
-            this.actionSounds['step'].play();
+            this.actionSounds['step'].play(config.soundParams);
           }
         }
         this.isMoving = false;
@@ -282,6 +253,13 @@ export default class extends Phaser.GameObjects.Container {
       this.frontLayer.putTileAt(overlapItem, tmpX, tmpY);
     }
     this.frontLayer.putTileAt(-1, tmpX, tmpY - 1);
+    if (!chain) {
+      let xOverlapItem = this.map.getLayer('behindViking').data[this.gridY][this.gridX].index;
+      if (xOverlapItem) {
+        this.frontLayer.putTileAt(xOverlapItem, this.gridX, this.gridY);
+      }
+      this.frontLayer.putTileAt(-1, this.gridX, this.gridY - 1);
+    }
     if (!config.musicMuted && !config.soundsMuted) {
       if (item !== -1) {
         const goodItem = this.map.getLayer('good_items').data[tmpY][tmpX].index;
@@ -291,9 +269,9 @@ export default class extends Phaser.GameObjects.Container {
             break;
           }
         }
-        this.actionSounds[i === config.soundsMap.length ? 'break' : config.soundsMap[i].sound].play();
+        this.actionSounds[i === config.soundsMap.length ? 'break' : config.soundsMap[i].sound].play(config.soundParams);
       } else {
-        this.actionSounds['step'].play();
+        this.actionSounds['step'].play(config.soundParams);
       }
     }
     this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);

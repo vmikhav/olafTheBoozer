@@ -4,7 +4,6 @@ import {getCurrentLevel, resetGameStat, showMap} from '../utils'
 import Button from '../components/button'
 import Panel from '../components/panel'
 import ImageButton from '../components/imageButton'
-import Cloud from '../sprites/Cloud'
 import Viking from "../sprites/Viking";
 
 export default class extends Phaser.Scene {
@@ -15,8 +14,6 @@ export default class extends Phaser.Scene {
 
   viking;
   map;
-
-  clouds;
 
   menuButton;
   muteButton;
@@ -33,6 +30,7 @@ export default class extends Phaser.Scene {
   params;
 
   fixedElements;
+  buttonHideDuration = 500;
 
   constructor () {
     super({ key: 'GameScene' });
@@ -65,11 +63,6 @@ export default class extends Phaser.Scene {
       if (config.musicMuted) {
         this.changeMuteState(config.musicMuted);
       }
-    }
-    this.clouds = [];
-    for (let i = 0; i < 1; i++) {
-      this.clouds.push(new Cloud(this, i + 1));
-      this.add.existing(this.clouds[i]);
     }
 
     const camera = this.cameras.main;
@@ -143,6 +136,9 @@ export default class extends Phaser.Scene {
           };
 
           const showDialog = index => {
+            if (index && !config.musicMuted && !config.soundsMuted) {
+              this.sound.play('beep', config.soundParams);
+            }
             if (config.lang['level'+this.level].length > index) {
               this.textPanel.show(null,config.lang['level'+this.level][index], config.lang.next, () => showDialog(index + 1));
             } else {
@@ -173,7 +169,7 @@ export default class extends Phaser.Scene {
         targets: [this.backgroundMask],
         alpha: { from: 1, to: 0 },
         ease: 'Sine.easeOut',
-        duration: 1000,
+        duration: 500,
         onComplete: () => {
 
         }
@@ -184,7 +180,7 @@ export default class extends Phaser.Scene {
       delay: 1000,
       callback: () => {
         this.fixedElements = [
-          this.muteButton, this.restartButton, this.backStepButton,
+          this.muteButton, this.restartButton, this.backStepButton, this.menuButton,
           this.upButton, this.leftButton, this.rightButton, this.downButton,
           this.panel, this.textPanel,
         ];
@@ -211,11 +207,11 @@ export default class extends Phaser.Scene {
   }
 
   levelResult(total, completed, steps) {
-    this.backStepButton.hide();
-    this.upButton.hide();
-    this.downButton.hide();
-    this.leftButton.hide();
-    this.rightButton.hide();
+    this.backStepButton.hide(this.buttonHideDuration);
+    this.upButton.hide(this.buttonHideDuration);
+    this.downButton.hide(this.buttonHideDuration);
+    this.leftButton.hide(this.buttonHideDuration);
+    this.rightButton.hide(this.buttonHideDuration);
     if (this.viking) {
       this.viking.canMove = false;
       this.viking.restorePath();
@@ -226,7 +222,7 @@ export default class extends Phaser.Scene {
       levels[this.level] = {score: 0, steps: 0};
     }
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play(progress < 1 ? 'tada' : 'fanfare');
+      this.sound.play(progress < 1 ? 'tada' : 'fanfare', config.soundParams);
     }
     const score = Math.floor(this.map.properties.score * progress);
     let text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
@@ -275,21 +271,22 @@ export default class extends Phaser.Scene {
     if (this.isRestarting && !otherLevel) {return;}
     this.isRestarting = true;
     if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play('beep');
+      this.sound.play('beep', config.soundParams);
     }
-    this.muteButton.hide();
-    this.panel.hide();
-    this.restartButton.hide();
-    this.upButton.hide();
-    this.downButton.hide();
-    this.leftButton.hide();
-    this.rightButton.hide();
+    this.muteButton.hide(this.buttonHideDuration);
+    this.panel.hide(this.buttonHideDuration);
+    this.backStepButton.hide(this.buttonHideDuration);
+    this.restartButton.hide(this.buttonHideDuration);
+    this.upButton.hide(this.buttonHideDuration);
+    this.downButton.hide(this.buttonHideDuration);
+    this.leftButton.hide(this.buttonHideDuration);
+    this.rightButton.hide(this.buttonHideDuration);
     this.tweens.add({
       targets: this.backgroundMask,
       alpha: 1,
       ease: 'Sine.easeOut',
-      duration: 1500,
-      delay: 500,
+      duration: 500,
+      delay: 250,
       onComplete: () => {
         if (!otherLevel) {
           this.scene.restart(this.params);
@@ -316,17 +313,20 @@ export default class extends Phaser.Scene {
   openMenu() {
     if (this.isRestarting) {return;}
     this.isRestarting = true;
+    if (!config.musicMuted && !config.soundsMuted) {
+      this.sound.play('beep', config.soundParams);
+    }
     resetGameStat();
     localStorage[config.localStorageName + '.score'] = 0;
-    this.menuButton.hide();
-    this.muteButton.hide();
-    this.panel.hide();
+    this.menuButton.hide(this.buttonHideDuration);
+    this.muteButton.hide(this.buttonHideDuration);
+    this.panel.hide(this.buttonHideDuration);
     this.tweens.add({
       targets: this.backgroundMask,
       alpha: 1,
       ease: 'Sine.easeOut',
-      duration: 1500,
-      delay: 500,
+      duration: 500,
+      delay: 250,
       onComplete: () => {
         if (config.music) {
           config.music.stop();
