@@ -26,6 +26,7 @@ export default class extends Phaser.Scene {
     this.load.image('down', 'assets/images/down.png');
     this.load.image('left', 'assets/images/left.png');
     this.load.image('right', 'assets/images/right.png');
+    this.load.image('logo', 'assets/images/logo.png');
     this.load.spritesheet('portraits', 'assets/images/portraits.png', {frameWidth: 32, frameHeight: 32});
     this.load.spritesheet('viking', 'assets/images/viking.png', {frameWidth: 16, frameHeight: 16});
     this.load.spritesheet('clouds', 'assets/images/clouds.png', {frameWidth: 400, frameHeight: 166});

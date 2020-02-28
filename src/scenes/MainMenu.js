@@ -4,6 +4,7 @@ import Button from '../components/button'
 import {getCurrentLevel, resetGameStat, showMap} from '../utils'
 
 export default class extends Phaser.Scene {
+  logo;
   startButton;
   moveDistance;
   backgroundMask;
@@ -46,11 +47,13 @@ export default class extends Phaser.Scene {
       delay: 0,
       onComplete: () => {
         this.moveDistance = (worldView.centerY - 200) - (worldView.top - 500);
-        this.startButton = new Button(this, worldView.centerX, worldView.top - 500, 500, 150, config.lang.play, 'buttonLong_brown', () => this.start());
+        this.logo = this.add.image(worldView.centerX, worldView.top - 600, 'logo');
+        this.startButton = new Button(this, worldView.centerX, worldView.top - 400, 500, 150, config.lang.play, 'buttonLong_brown', () => this.start());
         this.add.existing(this.startButton);
+        this.logo.setScrollFactor(0, 0, true);
         this.startButton.setScrollFactor(0, 0, true);
         this.tweens.add({
-          targets: [this.startButton],
+          targets: [this.logo, this.startButton],
           y: '+=' + this.moveDistance,
           ease: 'Sine.easeOut',
           duration: 1000,
@@ -62,7 +65,7 @@ export default class extends Phaser.Scene {
     this.time.addEvent({
       delay: 2000,
       callback: () => {
-        this.fixedElements = [this.startButton];
+        this.fixedElements = [this.logo, this.startButton];
         this.onResize();
       }
     });
@@ -88,7 +91,7 @@ export default class extends Phaser.Scene {
     config.gameStat.currentLevel = parseInt(localStorage[config.localStorageName + '.currentLevel'] || '0');
     config.gameStat.score = parseInt(localStorage[config.localStorageName + '.score'] || '0');
     this.tweens.add({
-      targets: [this.startButton],
+      targets: [this.logo, this.startButton],
       y: '-=' + this.moveDistance,
       ease: 'Sine.easeIn',
       duration: 1000,
