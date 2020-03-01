@@ -48,7 +48,7 @@ export default class extends Phaser.Scene {
       onComplete: () => {
         this.moveDistance = (worldView.centerY - 200) - (worldView.top - 500);
         this.logo = this.add.image(worldView.centerX, worldView.top - 600, 'logo');
-        this.startButton = new Button(this, worldView.centerX, worldView.top - 400, 500, 150, config.lang.play, 'buttonLong_brown', () => this.start());
+        this.startButton = new Button(this, worldView.centerX, worldView.top - 400, 400, 125, config.lang.play, 'buttonLong_brown', () => this.start());
         this.add.existing(this.startButton);
         this.logo.setScrollFactor(0, 0, true);
         this.startButton.setScrollFactor(0, 0, true);

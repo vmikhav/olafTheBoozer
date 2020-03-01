@@ -133,6 +133,12 @@ export default class extends Phaser.Scene {
             this.add.existing(this.leftButton); this.leftButton.show();
             this.add.existing(this.rightButton); this.rightButton.show();
             this.add.existing(this.downButton); this.downButton.show();
+            this.time.addEvent({
+              delay: 1000,
+              callback: () => {
+                this.onResize();
+              }
+            });
           };
 
           const showDialog = index => {

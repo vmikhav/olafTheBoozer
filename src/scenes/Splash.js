@@ -28,7 +28,7 @@ export default class extends Phaser.Scene {
     this.load.image('right', 'assets/images/right.png');
     this.load.image('logo', 'assets/images/logo.png');
     this.load.spritesheet('portraits', 'assets/images/portraits.png', {frameWidth: 32, frameHeight: 32});
-    this.load.spritesheet('viking', 'assets/images/viking.png', {frameWidth: 16, frameHeight: 16});
+    this.load.spritesheet('viking', 'assets/images/viking.png', {frameWidth: 24, frameHeight: 24});
     this.load.spritesheet('clouds', 'assets/images/clouds.png', {frameWidth: 400, frameHeight: 166});
     this.load.spritesheet('boom', 'assets/images/boom.png', {frameWidth: 128, frameHeight: 128});
     for (let sound of config.gameOptions.hiccupSounds) {
@@ -76,28 +76,28 @@ export default class extends Phaser.Scene {
       key: 'viking_idle_left',
       frames: [ { key: 'viking', frame: 0 }, { key: 'viking', frame: 1 }, { key: 'viking', frame: 0 } ],
       frameRate: 5,
-      repeatDelay: 1000,
+      repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_idle_right',
       frames: [ { key: 'viking', frame: 3 }, { key: 'viking', frame: 2 }, { key: 'viking', frame: 3 } ],
       frameRate: 5,
-      repeatDelay: 1000,
+      repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_naked_left',
       frames: [ { key: 'viking', frame: 4 }, { key: 'viking', frame: 5 }, { key: 'viking', frame: 4 } ],
       frameRate: 5,
-      repeatDelay: 1000,
+      repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_naked_right',
       frames: [ { key: 'viking', frame: 7 }, { key: 'viking', frame: 6 }, { key: 'viking', frame: 7 } ],
       frameRate: 5,
-      repeatDelay: 1000,
+      repeatDelay: 2000,
       repeat: -1,
     });
 

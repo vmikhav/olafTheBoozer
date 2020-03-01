@@ -42,8 +42,8 @@ export default class extends Phaser.GameObjects.Container {
     this.path   = [{x, y, item: -1}];
     this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, 'viking', 5);
     this.sprite.setDisplaySize(config.gameOptions.vikingSize, config.gameOptions.vikingSize);
-    const origin = ((config.gameOptions.vikingSize - config.gameOptions.tileSize) / 2) / config.gameOptions.vikingSize;
-    this.sprite.setOrigin(origin, 0.175 + origin);
+    const origin = ((config.gameOptions.vikingSize - 24) / 2) / config.gameOptions.vikingSize;
+    this.sprite.setOrigin(-0.125 + origin, 0.1 + origin);
     this.map = map;
 
     const style = {fontSize: 16, fontFamily: '"Press Start 2P"'};
