@@ -57,7 +57,7 @@ export default class extends Phaser.Scene {
     this.fixedElements = [];
 
     if (!config.music) {
-      config.music = this.sound.add('birds', config.musicParams);
+      config.music = this.sound.add('the-first-snow', config.musicParams);
       config.music.play();
       config.musicMuted = localStorage[config.localStorageName + '.muted'] === 'true';
       if (config.musicMuted) {
@@ -112,13 +112,13 @@ export default class extends Phaser.Scene {
             'buttonSquare_brown', 'backStep', () => {this.stepBack();}).setAlpha(0).setScrollFactor(0, 0, true);
 
           this.upButton = new ImageButton(this, worldView.right - 200, worldView.bottom - 310, 120, 120,
-            'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}).setAlpha(0).setScrollFactor(0, 0, true);
+            'buttonSquare_brown', 'up', () => {this.viking.move(0, -1)}, true).setAlpha(0).setScrollFactor(0, 0, true);
           this.leftButton = new ImageButton(this, worldView.right - 315, worldView.bottom - 195, 120, 120,
-            'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}).setAlpha(0).setScrollFactor(0, 0, true);
+            'buttonSquare_brown', 'left', () => {this.viking.move(-1, 0)}, true).setAlpha(0).setScrollFactor(0, 0, true);
           this.rightButton = new ImageButton(this, worldView.right - 85, worldView.bottom - 195, 120, 120,
-            'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}).setAlpha(0).setScrollFactor(0, 0, true);
+            'buttonSquare_brown', 'right', () => {this.viking.move(1, 0)}, true).setAlpha(0).setScrollFactor(0, 0, true);
           this.downButton = new ImageButton(this, worldView.right - 200, worldView.bottom - 80, 120, 120,
-            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}).setAlpha(0).setScrollFactor(0, 0, true);
+            'buttonSquare_brown', 'down', () => {this.viking.move(0, 1)}, true).setAlpha(0).setScrollFactor(0, 0, true);
 
           this.textPanel = new Panel(this, worldView.centerX, worldView.bottom - 200, 600, 300).setScrollFactor(0, 0, true);
           this.add.existing(this.textPanel);
@@ -218,6 +218,10 @@ export default class extends Phaser.Scene {
     this.downButton.hide(this.buttonHideDuration);
     this.leftButton.hide(this.buttonHideDuration);
     this.rightButton.hide(this.buttonHideDuration);
+    if (config.music) {
+      config.music.stop();
+      config.music = null;
+    }
     if (this.viking) {
       this.viking.canMove = false;
       this.viking.restorePath();
@@ -227,8 +231,10 @@ export default class extends Phaser.Scene {
     if (!levels.hasOwnProperty(this.level)) {
       levels[this.level] = {score: 0, steps: 0};
     }
-    if (!config.musicMuted && !config.soundsMuted) {
-      this.sound.play(progress < 1 ? 'tada' : 'fanfare', config.soundParams);
+    config.music = this.sound.add(progress < 1 ? 'daybreak' : 'its-only-now', Object.assign({}, config.musicParams, {loop: false}));
+    config.music.play();
+    if (config.musicMuted) {
+      this.changeMuteState(config.musicMuted);
     }
     const score = Math.floor(this.map.properties.score * progress);
     let text = config.lang.score + ': ' + score + ' (' + Math.floor(100 * progress) + '%)';
@@ -287,6 +293,10 @@ export default class extends Phaser.Scene {
     this.downButton.hide(this.buttonHideDuration);
     this.leftButton.hide(this.buttonHideDuration);
     this.rightButton.hide(this.buttonHideDuration);
+    if (config.music) {
+      config.music.stop();
+      config.music = null;
+    }
     this.tweens.add({
       targets: this.backgroundMask,
       alpha: 1,

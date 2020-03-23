@@ -14,6 +14,7 @@ export default class extends Phaser.GameObjects.Container {
   actionSounds;
   orientation = 'left';
   status = 'idle';
+  animName;
 
   cursorKeys;
   wasdKeys;
@@ -31,6 +32,9 @@ export default class extends Phaser.GameObjects.Container {
 
   trails = [614, 615, 647, 646];
 
+  keyTimeout;
+  isKeyStuck = false;
+
   constructor(scene, map, x, y, callback = (total, collected, steps) => {}) {
     super(scene, x * config.gameOptions.tileSize, y * config.gameOptions.tileSize);
 
@@ -42,8 +46,10 @@ export default class extends Phaser.GameObjects.Container {
     this.path   = [{x, y, item: -1}];
     this.sprite = new Phaser.GameObjects.Sprite(scene, 0, 0, 'viking', 5);
     this.sprite.setDisplaySize(config.gameOptions.vikingSize, config.gameOptions.vikingSize);
-    const origin = ((config.gameOptions.vikingSize - 24) / 2) / config.gameOptions.vikingSize;
-    this.sprite.setOrigin(-0.125 + origin, 0.1 + origin);
+    const origin = ((config.gameOptions.vikingSize - 16) / 2) / config.gameOptions.vikingSize;
+    this.sprite.setOrigin(-0.13 + origin, 0.04 + origin);
+    //const origin = ((config.gameOptions.vikingSize - 24) / 2) / config.gameOptions.vikingSize;
+    //this.sprite.setOrigin(-0.125 + origin, 0.1 + origin);
     this.map = map;
 
     const style = {fontSize: 16, fontFamily: '"Press Start 2P"'};
@@ -88,6 +94,7 @@ export default class extends Phaser.GameObjects.Container {
     this.checkStatus();
 
     this.sprite.anims.play('viking_' + this.status + '_' + this.orientation);
+    this.animName = 'viking_' + this.status + '_' + this.orientation;
 
     this.cursorKeys = scene.input.keyboard.createCursorKeys();
     this.wasdKeys = scene.input.keyboard.addKeys('W,S,A,D');
@@ -113,16 +120,26 @@ export default class extends Phaser.GameObjects.Container {
           direction.x = 1;
         } else {
           this.isKeyPressed = false;
+          this.isKeyStuck = false;
+          clearTimeout(this.keyTimeout);
           return;
         }
         this.move(direction.x, direction.y);
         this.isKeyPressed = true;
+        this.keyTimeout = setTimeout(() => { this.isKeyPressed = false; this.isKeyStuck = true; },  this.isKeyStuck ? 175 : 325);
       }
     } else {
       this.isKeyPressed = this.cursorKeys.up.isDown || this.cursorKeys.down.isDown || this.cursorKeys.right.isDown || this.cursorKeys.left.isDown;
       if (!this.isKeyPressed) {
         this.isKeyPressed = this.wasdKeys.W.isDown || this.wasdKeys.S.isDown || this.wasdKeys.A.isDown || this.wasdKeys.D.isDown;
       }
+    }
+  }
+
+  setAnimation(key) {
+    if (this.animName !== key) {
+      this.animName = key;
+      this.sprite.anims.play(key, true);
     }
   }
 
@@ -139,7 +156,7 @@ export default class extends Phaser.GameObjects.Container {
     const badItem    = this.map.getLayer('bad_items').data[tmpY][tmpX].index;
     const actualItem = this.map.getLayer('puzzle').data[tmpY][tmpX].index;
     const wallItem   = this.map.getLayer('walls').data[tmpY][tmpX].index;
-    this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);
+    this.setAnimation('viking_' + this.status +'_' + this.orientation);
     if (actualItem === 500) { this.status = 'idle'; }
     if (
       (wallItem !== -1 && actualItem !== 391) || (badItem !== -1 && goodItem !== -1 && actualItem !== badItem) ||
@@ -274,7 +291,7 @@ export default class extends Phaser.GameObjects.Container {
         this.actionSounds['step'].play(config.soundParams);
       }
     }
-    this.sprite.anims.play('viking_' + this.status +'_' + this.orientation, true);
+    this.setAnimation('viking_' + this.status +'_' + this.orientation);
     this.scene.tweens.add({
       targets: this,
       x: newCoords.x,

@@ -22,13 +22,14 @@ export default {
     maxWidth: MAX_WIDTH,
     maxHeight: MAX_HEIGHT,
     tileSize: 32,
-    vikingSize: 48,
+    vikingSize: 32,
     hiccupDelay: 3500,
     hiccupTextDuration: 1000,
     moveDuration: 130,
     hiccupSounds: ['hrrng', 'hiccup', 'groan'],
+    soundtracks: ['the-first-snow', 'its-only-now', 'daybreak'],
     actionSounds: [
-      'beep.wav', 'birds.mp3', 'break.wav', 'bump.wav', 'water-step.wav',
+      'beep.wav', 'break.wav', 'bump.wav', 'water-step.wav',
       'glass.wav', 'smash.wav', 'step.wav', 'vomit.wav', 'drink.wav', 'pickup.wav',
     ],
     finishSounds: ['fanfare.mp3', 'tada.mp3'],
@@ -50,12 +51,12 @@ export default {
   soundsMuted: false,
   musicParams: {
     mute: false,
-    volume: .15,
+    volume: .2,
     rate: 1,
     detune: 0,
     seek: 0,
     loop: true,
-    delay: 500
+    delay: 0
   },
   soundParams: {
     volume: .25,

@@ -28,11 +28,15 @@ export default class extends Phaser.Scene {
     this.load.image('right', 'assets/images/right.png');
     this.load.image('logo', 'assets/images/logo.png');
     this.load.spritesheet('portraits', 'assets/images/portraits.png', {frameWidth: 32, frameHeight: 32});
-    this.load.spritesheet('viking', 'assets/images/viking.png', {frameWidth: 24, frameHeight: 24});
+    this.load.spritesheet('viking', 'assets/images/viking.png', {frameWidth: 16, frameHeight: 16});
+    this.load.spritesheet('viking_new', 'assets/images/viking_new.png', {frameWidth: 24, frameHeight: 24});
     this.load.spritesheet('clouds', 'assets/images/clouds.png', {frameWidth: 400, frameHeight: 166});
     this.load.spritesheet('boom', 'assets/images/boom.png', {frameWidth: 128, frameHeight: 128});
     for (let sound of config.gameOptions.hiccupSounds) {
       this.load.audio(sound, 'assets/sounds/' + sound + '.wav');
+    }
+    for (let sound of config.gameOptions.soundtracks) {
+      this.load.audio(sound, 'assets/sounds/' + sound + '.mp3');
     }
     for (let sound of config.gameOptions.actionSounds) {
       const name = sound.split('.')[0];
@@ -65,6 +69,7 @@ export default class extends Phaser.Scene {
     this.textures.get('ui').setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.textures.get('portraits').setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.textures.get('viking').setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.textures.get('viking_new').setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     this.anims.create({
       key: 'boom_creating',
@@ -74,28 +79,28 @@ export default class extends Phaser.Scene {
     });
     this.anims.create({
       key: 'viking_idle_left',
-      frames: [ { key: 'viking', frame: 0 }, { key: 'viking', frame: 1 }, { key: 'viking', frame: 0 } ],
+      frames: [ { key: 'viking_new', frame: 0 }, { key: 'viking_new', frame: 1 }, { key: 'viking_new', frame: 0 } ],
       frameRate: 5,
       repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_idle_right',
-      frames: [ { key: 'viking', frame: 3 }, { key: 'viking', frame: 2 }, { key: 'viking', frame: 3 } ],
+      frames: [ { key: 'viking_new', frame: 3 }, { key: 'viking_new', frame: 2 }, { key: 'viking_new', frame: 3 } ],
       frameRate: 5,
       repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_naked_left',
-      frames: [ { key: 'viking', frame: 4 }, { key: 'viking', frame: 5 }, { key: 'viking', frame: 4 } ],
+      frames: [ { key: 'viking_new', frame: 4 }, { key: 'viking_new', frame: 5 }, { key: 'viking_new', frame: 4 } ],
       frameRate: 5,
       repeatDelay: 2000,
       repeat: -1,
     });
     this.anims.create({
       key: 'viking_naked_right',
-      frames: [ { key: 'viking', frame: 7 }, { key: 'viking', frame: 6 }, { key: 'viking', frame: 7 } ],
+      frames: [ { key: 'viking_new', frame: 7 }, { key: 'viking_new', frame: 6 }, { key: 'viking_new', frame: 7 } ],
       frameRate: 5,
       repeatDelay: 2000,
       repeat: -1,

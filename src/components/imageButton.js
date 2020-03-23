@@ -1,22 +1,43 @@
 export default class ImageButton extends Phaser.GameObjects.Container {
   callback;
+  callbackInterval;
+  callbackTimeout;
 
-  constructor(scene, x, y, width, height, frame, image, callback = () => {}) {
+  constructor(scene, x, y, width, height, frame, image, callback = () => {}, earlyFire = false) {
     super(scene, x, y);
 
     this.callback = callback;
     this.frame = frame;
     this.buttonHeight = height;
     this.button = new Phaser.GameObjects.Image(scene, 0, 0, 'ui', this.frame + '.png');
-    this.button
-      .setDisplaySize(width, height)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerdown', () => this.enterButtonActiveState() )
-      .on('pointerout', () => this.enterButtonNormalState() )
-      .on('pointerup', () => {
+    this.button.setDisplaySize(width, height).setInteractive({ useHandCursor: true });
+    if (earlyFire) {
+      const restore = () => {
         this.enterButtonNormalState();
-        this.clickCallback();
-      });
+        clearTimeout(this.callbackTimeout);
+        clearInterval(this.callbackInterval);
+      };
+      this.button
+        .on('pointerdown', () => {
+          this.enterButtonActiveState();
+          this.clickCallback();
+          clearTimeout(this.callbackTimeout);
+          clearInterval(this.callbackInterval);
+          this.callbackTimeout = setTimeout(() => {
+            this.callbackInterval = setInterval(() => this.clickCallback(), 175);
+          }, 150);
+        })
+        .on('pointerout', restore)
+        .on('pointerup', restore);
+    } else {
+      this.button
+        .on('pointerdown', () => this.enterButtonActiveState())
+        .on('pointerout', () => this.enterButtonNormalState())
+        .on('pointerup', () => {
+          this.enterButtonNormalState();
+          this.clickCallback();
+        });
+    }
 
     this.image = new Phaser.GameObjects.Image(scene, 0, 0, image).setDisplaySize(width - 30, height - 30);
 
